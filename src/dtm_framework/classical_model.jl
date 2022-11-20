@@ -6,16 +6,10 @@ using Graphs;
 using JuMP;
 using GLPK;
 
+
+
+
 function classical_cycle_model(g, utilities, n)
-
-    """
-    In this function we provide a modelisation of the 
-
-    g : the kep_graph
-    utilities : utilities of each node (utilities[i] the utility of the node i)
-    n : the maximum length of the cycles
-    """
-
     enum_cycles = simplecycles_limited_length(g, n, 10^6)
     if length(enum_cycles)==0
         # in this case we return nothing
