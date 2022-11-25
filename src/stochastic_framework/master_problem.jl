@@ -1,3 +1,13 @@
+""" 
+    masterProblem
+
+# Parameters
+* `C` : index of the cycles
+* `vertic_cycles` : a dictionnary, at the key i of this list, give the a list of the index of the cycles
+                    which involve the node i
+* `U` : the utilities of each cycle in the graph.
+"""
+
 function masterProblem(C, vertic_cycles ,U)
 
     model = Model(GLPK.Optimizer)
@@ -6,11 +16,11 @@ function masterProblem(C, vertic_cycles ,U)
 
     @objective(model, Min, sum( - x[c]U[c] for c in C))
 
-    for C_v in vertic_cycles
+    for (v, C_v) in vertic_cycles
         @constraint(model, sum(x[c] for c in C_v)<=1)
     end
-
-    return Dict("model" => model)
+    
+    return(Dict("model" => model))
 
 end
 ;
