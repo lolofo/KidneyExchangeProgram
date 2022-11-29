@@ -25,7 +25,46 @@ function masterProblem(C, vertic_cycles ,U)
 end
 ;
 
+
+
+
+
 """
-TODO : faire une fonction qui ajoute au problème maitre 
-       les contraintes en L (Benders)
+    updateMasterProblem
+
+Update the master problem to have the classical recourse modelisation
+
+# Parameters
+* `model` : a master problem type
+* `duals` : the duals solutions associated with each scenarios (of shape |C| x S)
+* `T_array` : the different scenarios (of shape |C| x S)
+* `C` : our index cycles
+* `U` : the utility of each cycle in our cycles (of shape |C|)
 """
+function updateMasterProblem(model, duals, T_array, C, U)
+    # TODO
+    return Nothing
+end
+;
+
+
+
+
+
+"""
+    updateCVARMasterProblem
+
+Update the master problem to have an risk adverse modelisation based on the CVAR criterion
+
+# Parameters
+* `model` : a master problem type
+* `duals` : the duals solutions associated with each scenarios (of shape |C| x S)
+* `T_array` : the different scenarios (of shape |C| x S)
+* `C` : our index cycles
+* `U` : the utility of each cycle in our cycles (of shape |C|)
+"""
+function updateCVARMasterProblem(model, duals, T_array, C, U)
+    # TODO
+    return Nothing
+end
+;

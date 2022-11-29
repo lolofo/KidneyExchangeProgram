@@ -7,7 +7,7 @@ using GLPK;
 This function will create the recourse problem 
 
 # Parameters
-* `x` : the value of the first level solution
+* `x` : the value of the first level solution of shape |C|
 * `T` : a given scenario
 * `C` : the index of the cycles
 * `U` : the utilities of each cycles
@@ -23,7 +23,7 @@ function recourseProblem(x, T, C, U)
 
     @constraints(model, 
     begin
-        recours_cons[c in C], y[c] = T[c]x[c]
+        recours_cons[c in C], y[c] == T[c]x[c]
     end
     )
 
@@ -50,16 +50,21 @@ end;
 
 This function will solve the recourse problem for multiple scenarios
 
+Some notations :
+    |C| : the number of cycles
+    S : the number of scenarios
+
 # Parameters
 * `x` : the first level solution (an array of binary variables)
-* `T_array` : matrix of the different scenarios
-* `C` : the index of each cycles in the kep graph
-* `U` : the utility of each cycle in the kep_graph
+* `T_array` : matrix of the different scenarios (of shape |C| x S)
+* `C` : the index of each cycles in the kep graph (of shape |C|)
+* `U` : the utility of each cycle in the kep_graph (of shape |C|)
 """
 function solveRecourse(x, T_array, C, U)
 
     @assert length(x) == size(T_array)[1] "dimension problem between x and T_array"
     @assert length(x) == length(C) "dimension problem between x and C"
+    @assert length(C) == length(U) "dimension problem between C and U"
 
     duals_solution = zeros(length(C), size(T_array))
 
@@ -81,7 +86,8 @@ function solveRecourse(x, T_array, C, U)
     return Dict(
         "duals" => duals_solution
     )
-end ;
+end 
+;
 
 
 

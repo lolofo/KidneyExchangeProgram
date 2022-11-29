@@ -4,7 +4,7 @@
 This function return a scenario for the recourse problem
 
 # Parameters
-* `failureRate` : list of the probability that each cycle fails
+* `failureRate` : list of the probability that each cycle fails (of shape |C|)
 """
 function getScenario(failureRate)
     T = [] 
@@ -14,9 +14,4 @@ function getScenario(failureRate)
     end
     return(T)
 end
-
-
-
-"""
-TODO : 
-"""
+;
