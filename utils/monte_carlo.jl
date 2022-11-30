@@ -14,4 +14,16 @@ function getScenario(failureRate)
     end
     return(T)
 end
+
+
+function getScenarioK(failureRate, K)
+    card_cycle = length(failureRate)
+    T = zeros(Int8, card_cycle, K)
+    for i in 1:1:K
+        T[:, i] = getScenario(failureRate)
+    end
+    return(T)
+end
+
+
 ;
