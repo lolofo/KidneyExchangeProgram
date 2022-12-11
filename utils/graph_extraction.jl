@@ -70,8 +70,29 @@ function getCycleUtility(weights, mode)
     return(weight)
 end;
 
+##############################################################################################
+##############################################################################################
+##############################################################################################
 
-function extractInformation(g, K, mode)
+""" extractCycleInformation
+
+This function allow us to extract the relevant information from the kep_graph.
+The relevant information here concern the cycle formulation of the kep_graph.
+
+# Parameters
+* `g` : the kep_graph
+* `K` (int): the length of the Cycles
+* `mode`: the method to use to compute the calculus of the utilities
+
+# Return 
+This function returns a Julia dictionnary with the following keys
+* `Cycles_index` : a list of integer each element of the list corresponds to the index of a cycle
+* `vertic_cycles` : a dictionnary with vertices as keys and a list of cycles which involve the key as value
+* `Cycles` : the exhaustive enumeration of the cycles
+* `P` : for each cycle, the probability of failure. To get the success do 1 - ...
+* `U` : the utility of each cycle
+"""
+function extractCycleInformation(g, K, mode)
 
     enum_cycles = simplecycles_limited_length(g, K, 10^6)
     if length(enum_cycles)==0
