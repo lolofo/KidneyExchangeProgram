@@ -1,5 +1,12 @@
 using Graphs;
 
+
+##############################################################################################
+##############################################################################################
+##############################################################################################
+
+### Extract information for the cycles ###
+
 """
     getEdgeQuantiy
 
@@ -34,7 +41,6 @@ end
 
 # Parameters
 * `probs` : the probability of each edge in a cycle
-
 """
 function getProbCycle(probs)
     buff_prob = 1
@@ -70,11 +76,8 @@ function getCycleUtility(weights, mode)
     return(weight)
 end;
 
-##############################################################################################
-##############################################################################################
-##############################################################################################
-
-""" extractCycleInformation
+""" 
+    extractCycleInformation
 
 This function allow us to extract the relevant information from the kep_graph.
 The relevant information here concern the cycle formulation of the kep_graph.
@@ -85,7 +88,7 @@ The relevant information here concern the cycle formulation of the kep_graph.
 * `mode`: the method to use to compute the calculus of the utilities
 
 # Return 
-This function returns a Julia dictionnary with the following keys
+This function returns a Julia dictionnary with the following keys :
 * `Cycles_index` : a list of integer each element of the list corresponds to the index of a cycle
 * `vertic_cycles` : a dictionnary with vertices as keys and a list of cycles which involve the key as value
 * `Cycles` : the exhaustive enumeration of the cycles
@@ -136,5 +139,15 @@ function extractCycleInformation(g, K, mode)
     return(res)
 end
 ;
+
+
+##############################################################################################
+##############################################################################################
+##############################################################################################
+
+### Extract information for the cluster problem ###
+
+
+
 
 

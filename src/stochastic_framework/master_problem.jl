@@ -100,8 +100,6 @@ end
 In this part we propose a new insiste on the kindey exchange programe based on cluster
 """
 
-
-
 """ 
     masterClusterProblem
 
@@ -115,16 +113,24 @@ The master problem try to find the best clusters for our problem.
 # Return 
 * this function will return the master problem coded with its constraints but with no objective
 """
+<<<<<<< HEAD
 function masterClusterProblem(kep_graph, ClusterSize)
+=======
+function masterClusterProblem(kep_graph, U)
+>>>>>>> a9ff731d8d53da3c1f5b4c4882fdf604b344539e
 
     V = vertices(kep_graph) # the vertices of our graph
 
     
     model = Model(GLPK.Optimizer)
     @variable(model, x[i = V, j = V], Bin)
+<<<<<<< HEAD
 
     # temp objectif otherwise we don't have any objectif at the first path (then updated)
     @objective(model, Max, sum(sum(x[i,j] for i in V) for j in V))
+=======
+    
+>>>>>>> a9ff731d8d53da3c1f5b4c4882fdf604b344539e
     # lets define the clustering constraints
     for i in V
         for j in V
@@ -138,7 +144,6 @@ function masterClusterProblem(kep_graph, ClusterSize)
         # size of the clusters
         @constraint(model, sum(x[i, j] for j in V) <= ClusterSize)
     end
-
     return(Dict("model" => model))
 end
 ;

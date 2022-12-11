@@ -24,4 +24,7 @@ function plotSolution(graph, x, enum_cycles, cycles_vertic,membership_node, memb
         nodefillc=nodefillc,
         edgestrokec=edgestrokec,
         layout=circular_layout)
-end;
+end
+
+
+;

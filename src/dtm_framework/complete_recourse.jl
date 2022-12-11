@@ -4,13 +4,13 @@ using Random, MetaGraphs, SimpleWeightedGraphs, Graphs, JuMP, DelimitedFiles, Di
     completRecourseProblem
 
 # Parameters
+
 * `C` : index of the cycles
 * `vertic_cycles` : a dictionnary, at the key i of this list, give the a list of the index of the cycles which involve the node i
 * `U` : the utilities of each cycle in the graph.
 * `S_P` : probability of sucess of each cycle
 """
 function completRecourseProblem(C, vertic_cycles , U, S_P)
-
     model = Model(GLPK.Optimizer)
 
     @variable(model, x[i in C], Bin)
@@ -22,6 +22,5 @@ function completRecourseProblem(C, vertic_cycles , U, S_P)
     end
     
     return(Dict("model" => model))
-
 end
 ;
