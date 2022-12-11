@@ -3,6 +3,8 @@ using Random, MetaGraphs, SimpleWeightedGraphs, Graphs, JuMP, DelimitedFiles, Di
 """ 
     completRecourseProblem
 
+This is the deterministic version of the problem with the complete recourse.
+
 # Parameters
 
 * `C` : index of the cycles
@@ -11,6 +13,7 @@ using Random, MetaGraphs, SimpleWeightedGraphs, Graphs, JuMP, DelimitedFiles, Di
 * `S_P` : probability of sucess of each cycle
 """
 function completRecourseProblem(C, vertic_cycles , U, S_P)
+    
     model = Model(GLPK.Optimizer)
 
     @variable(model, x[i in C], Bin)
