@@ -1,3 +1,6 @@
+
+using GLPK
+
 """ 
     masterProblem
 
@@ -107,30 +110,33 @@ The master problem try to find the best clusters for our problem.
 
 # Parameters
 * `kep_graph` : the kep graph
-* `U` (int) : the maximal size of the clusters
+* `ClusterSize` (int) : the maximal size of the clusters
 
 # Return 
 * this function will return the master problem coded with its constraints but with no objective
 """
-function masterClusterProblem(kep_graph, U :: int)
+function masterClusterProblem(kep_graph, ClusterSize)
 
     V = vertices(kep_graph) # the vertices of our graph
 
+    
     model = Model(GLPK.Optimizer)
     @variable(model, x[i = V, j = V], Bin)
 
+    # temp objectif otherwise we don't have any objectif at the first path (then updated)
+    @objective(model, Max, sum(sum(x[i,j] for i in V) for j in V))
     # lets define the clustering constraints
     for i in V
         for j in V
             # réflexivity
-            @constraint(model, x[i,j] = x[j, i])
+            @constraint(model, x[i, j] == x[j, i])
             for k in V
                 # transitivity
-                @constraint(model, x[i,j]+x[j,k]-1 <= x[i,k])
+                @constraint(model, x[i, j]+x[j, k]-1 <= x[i, k])
             end
         end
         # size of the clusters
-        @constraint(model, sum(x[i,j] for j in V) <= U)
+        @constraint(model, sum(x[i, j] for j in V) <= ClusterSize)
     end
 
     return(Dict("model" => model))
