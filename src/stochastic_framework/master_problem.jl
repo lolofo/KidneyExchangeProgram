@@ -104,7 +104,7 @@ In this part we propose a new insiste on the kindey exchange programe based on c
     masterClusterProblem
 
 This function will initiate the master problem.
-The master problem try to find the best clusters for our problem.
+The master problem here will try to solve the mean value problem.
 
 # Parameters
 * `kep_graph` : the kep graph
@@ -116,18 +116,17 @@ The master problem try to find the best clusters for our problem.
 # Return 
 * this function will return the master problem coded with its constraints but with no objective
 """
-function masterClusterProblem(kep_graph, ClusterSize, C, cycles, U)
+function masterClusterProblem(kep_graph, ClusterSize, C, cycles, U, vertic_cycles)
 
     V = vertices(kep_graph) # the vertices of our graph
     
     model = Model(GLPK.Optimizer)
 
-
     # the cluster variables
     @variable(model, x[i = V, j = V], Bin)
 
-    # the 
-    @variable(model, z[c in C], Bin)
+    # the mean value problem variable.
+    @variable(model, 1 >= z[c in C] >=0)
 
     @objective(model, Max, sum(z[c]U[c] for c in C))
     
@@ -158,6 +157,11 @@ function masterClusterProblem(kep_graph, ClusterSize, C, cycles, U)
             end
             @constraint(model, z[c] <= x[i, j]*(1 - get_prop(kep_graph, Edge((i,j)), :failure)))
         end 
+    end
+
+    for (v, C_v) in vertic_cycles
+        # each node must be at most in one cycle
+        @constraint(model, sum(z[c] for c in C_v)<=1)
     end
 
     return(Dict("model" => model))

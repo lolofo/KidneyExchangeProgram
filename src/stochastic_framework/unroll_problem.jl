@@ -15,7 +15,7 @@ ksi_s[i,j,k]
 # Return 
 * this function will return the master problem coded with its constraints but with no objective
 """
-function unrollClusterProblem(kep_graph, ClusterSize, C, cycles, U, ksi_s)
+function unrollClusterProblem(kep_graph, ClusterSize, C, cycles, U, ksi_s, vertic_cycles)
 
     V = vertices(kep_graph) # the vertices of our graph
     K = 1:1:size(ksi_s)[3]
@@ -26,7 +26,7 @@ function unrollClusterProblem(kep_graph, ClusterSize, C, cycles, U, ksi_s)
     @variable(model, x[i = V, j = V], Bin)
     @variable(model, y[c = C, k = K], Bin)
 
-    @objective(model, (1/lenght(K)) * sum(sum(y[c,k] for c in C) for k in K))
+    @objective(model, (1/lenght(K)) * sum(sum(y[c,k]*U[c] for c in C) for k in K))
     
     # lets define the clustering constraints
     for i in V
