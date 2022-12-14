@@ -65,8 +65,6 @@ function unrollClusterProblem(kep_graph, ClusterSize, C, cycles, U, ksi_s)
             @constraint(model, sum(y[c, k] for c in C_v)<=1)
         end
     end
-
     return(Dict("model" => model))
-
 end
 ;
