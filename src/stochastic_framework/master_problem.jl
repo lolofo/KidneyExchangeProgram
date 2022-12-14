@@ -109,17 +109,27 @@ The master problem try to find the best clusters for our problem.
 # Parameters
 * `kep_graph` : the kep graph
 * `ClusterSize` (int) : the maximal size of the clusters
+* `C` : the index of the cycles
+* `cycles` : the array of the cycles of length <= k
+* `U` : the vector of the utility of the cycles
 
 # Return 
 * this function will return the master problem coded with its constraints but with no objective
 """
-function masterClusterProblem(kep_graph, ClusterSize)
+function masterClusterProblem(kep_graph, ClusterSize, C, cycles, U)
 
     V = vertices(kep_graph) # the vertices of our graph
-
     
     model = Model(GLPK.Optimizer)
+
+
+    # the cluster variables
     @variable(model, x[i = V, j = V], Bin)
+
+    # the 
+    @variable(model, z[c in C], Bin)
+
+    @objective(model, Max, sum(z[c]U[c] for c in C))
     
     # lets define the clustering constraints
     for i in V
@@ -134,6 +144,22 @@ function masterClusterProblem(kep_graph, ClusterSize)
         # size of the clusters
         @constraint(model, sum(x[i, j] for j in V) <= ClusterSize)
     end
+
+    # let's define the constraint for the mean value problem
+    for c in C
+        current_cycle = cycles[c]
+        for k in 1:1:length(current_cycle)
+            i = current_cycle[k]
+            j = Nothing
+            if k==length(current_cycle)
+                j = current_cycle[1] 
+            else
+                j = current_cycle[k+1]
+            end
+            @constraint(model, z[c] <= x[i, j]*(1 - get_prop(kep_graph, Edge((i,j)), :failure)))
+        end 
+    end
+
     return(Dict("model" => model))
 end
 ;

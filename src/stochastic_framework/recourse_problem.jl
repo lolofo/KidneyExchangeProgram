@@ -100,7 +100,7 @@ This function will solve the recourse problem with cycle formulation for multipl
 
 # Parameters
 * `x` : solution au MP
-* `ksi` : random variable giving the success/fail of the cross test
+* `ksi` : random variable giving the success/fail of the cross test (one realisation of the random variable)
 * `C` : list of cycle index
 * `vertic_cycles` : Dictionary with {"graph vertices" : "lists of cycle which implie the keys"}
 * `U` : list of utility of each cycle
@@ -177,4 +177,5 @@ function recourseClusterProblem(x, ksi, C, vertic_cycles, U, cycles)
         "dual" => dual_solution
     )
 end
+;
 

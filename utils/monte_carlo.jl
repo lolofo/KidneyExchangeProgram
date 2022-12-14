@@ -26,4 +26,9 @@ function getScenarioK(failureRate, K)
 end
 
 
+function getClusterScenario(kep_graph)
+
+end
+
+
 ;
