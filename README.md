@@ -1,7 +1,5 @@
 # Kidney exchange program
 
-
-
 ```
 julia
 
