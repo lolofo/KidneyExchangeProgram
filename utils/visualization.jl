@@ -1,28 +1,32 @@
-function plotSolution(graph, x, enum_cycles, cycles_vertic,membership_node, membership_edge)
+
+function plotSolution(graph, clusterUsefull)
     n_node = nv(graph)
     n_edge = ne(graph)
-
-    real_cycles = x.==1
     
-    nodelabel = 1:n_node
-    edgelabel = 1:n_edge
-    
+    nodelabel = [v for v in Graphs.vertices(kep_graph)]
+    membership_node = [1 for v in Graphs.vertices(kep_graph)]
+    k = 2 
+    for (keys, values) in clusterUsefull
+        for value in values
+            membership_node[value] = k
+        end
+        k += 1
+    end
     # permet de définir une taille pour les noeuds
-    nodesize = [Graphs.outdegree(kep_graph, v) for v in Graphs.vertices(kep_graph)] # nodesize=nodesize
 
 
-    nodecolor = [colorant"lightgrey", colorant"orange"]
+    nodecolor = [colorant"lightgrey", colorant"orange", colorant"red", colorant"yellow", colorant"black", colorant"pink"]
     nodefillc = nodecolor[membership_node]
 
-    edgestrokec = nodecolor[membership_edge]
+    # edgestrokec = nodecolor[membership_edge]
+    # edgestrokec=edgestrokec,
 
-
+    # nodefillc=nodefillc,
     return gplot(kep_graph,
         nodelabel=nodelabel,
+        nodefillc=nodefillc,
         nodelabeldist=1.5,
         nodelabelangleoffset=π/4,
-        nodefillc=nodefillc,
-        edgestrokec=edgestrokec,
         layout=circular_layout)
 end
 
