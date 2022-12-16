@@ -1,5 +1,16 @@
 
-function plotSolution(graph, clusterUsefull)
+"""
+plotSolutionCluster
+
+This function allow us to plot in the same color the clusters
+
+# Parameters
+
+*`graph` : the kep graph
+*`clusterUsefull` : The cluster with |cluster|>=2
+"""
+
+function plotSolutionCluster(graph, clusterUsefull)
     n_node = nv(graph)
     n_edge = ne(graph)
     

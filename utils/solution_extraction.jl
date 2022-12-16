@@ -1,5 +1,16 @@
-function getCluster(kep_graph, sol)
-    nodelabel = [v for v in Graphs.vertices(kep_graph)]
+
+"""
+getCluster
+
+This function allow us to exctract clusters, cluster with one element are considered
+# Parameters
+
+*`graph` : the kep graph
+*`sol` : The solution of the master problem
+"""
+
+function getCluster(graph, sol)
+    nodelabel = [v for v in Graphs.vertices(graph)]
     stacklabel = []
     cluster = Dict()
     k = 1
@@ -18,7 +29,14 @@ function getCluster(kep_graph, sol)
     return cluster
 end;
 
+"""
+getClusterUsefull
 
+This function allow us to exctract clusters, cluster with less than 2 elements aren't considered
+# Parameters
+
+*`cluster` : solution given by getCluster(graph, sol))
+"""
 function getClusterUsefull(cluster)
     clusterUsefull = Dict()
     for (key, value) in cluster
