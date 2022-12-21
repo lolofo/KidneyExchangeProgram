@@ -105,17 +105,28 @@ This function will solve the recourse problem with cycle formulation for multipl
 * `vertic_cycles` : Dictionary with {"graph vertices" : "lists of cycle which implie the keys"}
 * `U` : list of utility of each cycle
 * `cycle` : an exaustive list of the cycle
+
+# Returns :
+This functions will return
+* the model : The model will allow us to access some other values later.
+* the duals solutions : the dual solution will allow us to update the master problem in the Benders decomposition.
+The dual solutions are decomposed into three groups lambda, mu and Delta which corresponds to the different constraints of the recourse
+problem.
 """
 function recourseClusterProblem(x, ksi, C, vertic_cycles, U, cycles)
     
     model = Model(GLPK.Optimizer)
-    it = 0 # initialisation
 
     # rescouse variables (with relaxation)
-    @variable(model, 1 >= y[i in C] >= 0)
+    @variable(model, y[c in C] >= 0)
     @objective(model, Min, sum(y[c]*U[c] for c in C))
 
     for c in C
+
+        # constraint for the variable Delta
+        cons_y = @constraint(model, y[c]<=1)
+        set_name(cons_y, "cons_y_"*str(c))
+
         current_cycle = cycles[c]
         for k in 1:1:length(current_cycle)
             i = current_cycle[k]
@@ -129,7 +140,6 @@ function recourseClusterProblem(x, ksi, C, vertic_cycles, U, cycles)
             # we can choose a cycle iif the edge exists and the cross test is successful
             cons = @constraint(model, y[c] <= x[i, j]*ksi[i, j])
             set_name(cons, "cons_"*string(c)*string(i)*string(j))
-            it += 1
         end 
     end
     
@@ -137,18 +147,30 @@ function recourseClusterProblem(x, ksi, C, vertic_cycles, U, cycles)
         # each node must be at most in one cycle
         cons = @constraint(model, sum(y[c] for c in C_v)<=1)
         set_name(cons, "cons_"*string(v))
-        it += 1
     end
 
     # optimisation 
-    
-    optimize!(model)
-    dual_solution = zeros(it)
+    # handle exception because julia error aren't good.
 
-    #######################################################
+    try
+        optimize!(model)
+    catch e
+        println("optimization error : problem during the optimization part")
+        println(e.msg)
+    end
+    
+
+    ### Now lets recover all the duals solutions ###
+
+    # the different dual solutions.
+    dual_lambda = zeros(size(x)[1], size(x)[2], length(C))
+    dual_mu = zeros(size(x)[1])
+    dual_delta = zeros(length(C))
+    
     if has_duals(model)
-        it = 1
         for c in C
+            dual_delta[c] = dual(constraint_by_name(model, "cons_y_"*str(c)))
+
             current_cycle = cycles[c]
             for k in 1:1:length(current_cycle)
                 i = current_cycle[k]
@@ -159,22 +181,21 @@ function recourseClusterProblem(x, ksi, C, vertic_cycles, U, cycles)
                 else
                     j = current_cycle[k+1] # following node in the cycle
                 end
-                dual_solution[it] = dual(constraint_by_name(model, "cons_"*string(c)*string(i)*string(j)))
-                it += 1
+                dual_lambda[i,j,c] = dual(constraint_by_name(model, "cons_"*string(c)*string(i)*string(j)))
             end 
         end
         
         for (v, C_v) in vertic_cycles
-            dual_solution[it] = dual(constraint_by_name(model, "cons_"*string(v)))
-            it += 1
+            dual_mu[v] = dual(constraint_by_name(model, "cons_"*string(v)))
         end
     else
-        print("No dual")
+        print("No dual : error stop the L shape methode")
+        return(Nothing) # return nothing to raise exception after.
     end
 
     return Dict(
         "model" => model,
-        "dual" => dual_solution
+        "dual" => Dict("dual_lambda" => dual_lambda, "dual_mu" => dual_mu, "dual_delta" => dual_delta)
     )
 end
 ;
