@@ -69,7 +69,6 @@ This function return K scenarios for the recourse problem with cluster formulati
 # Parameters
 * `kep_graph` : instance graph
 """
-
 function getScenarioClusterK(kep_graph, K)
     n = nv(kep_graph) 
     Sk = zeros(n, n, K) 

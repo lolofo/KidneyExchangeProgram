@@ -127,7 +127,6 @@ function masterClusterProblem(kep_graph, ClusterSize, C, cycles, U, vertic_cycle
 
     # the mean value problem variable.
     @variable(model, 1 >= z[c in C] >=0)
-
     @objective(model, Max, sum(z[c]U[c] for c in C))
     
     # lets define the clustering constraints

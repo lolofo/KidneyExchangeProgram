@@ -1,3 +1,4 @@
+using Random, MetaGraphs, SimpleWeightedGraphs, Graphs, JuMP, DelimitedFiles, Distributions, Plots, GraphPlot
 """ 
     unRollPRoblem
 
@@ -9,11 +10,11 @@ This function has the objective to solve the problem of the kidney exchange prog
 * `C` : the index of the cycles
 * `cycles` : the array of the cycles of length <= k
 * `U` : the vector of the utility of the cycles
-* `ksi_s` : a 3D tensor which gives us the scenario, if we want \ksi_{i,j}^k the value of \ksi_{i,j} for the scenario k, is
+* `ksi_s` : a 3D tensor which gives us the scenario, if we want ksi_{i,j}^k the value of ksi_{i,j} for the scenario k, is
 ksi_s[i,j,k]
 
-# Return 
-* this function will return the master problem coded with its constraints but with no objective
+# Return
+
 """
 function unrollClusterProblem(kep_graph, ClusterSize, C, cycles, U, ksi_s, vertic_cycles)
 
@@ -25,8 +26,7 @@ function unrollClusterProblem(kep_graph, ClusterSize, C, cycles, U, ksi_s, verti
     # the cluster variables
     @variable(model, x[i = V, j = V], Bin)
     @variable(model, y[c = C, k = K], Bin)
-
-    @objective(model, (1/lenght(K)) * sum(sum(y[c,k]*U[c] for c in C) for k in K))
+    @objective(model, Max, (1/length(K)) * sum(sum(y[c,k]*U[c] for c in C) for k in K))
     
     # lets define the clustering constraints
     for i in V
@@ -56,7 +56,7 @@ function unrollClusterProblem(kep_graph, ClusterSize, C, cycles, U, ksi_s, verti
                     j = current_cycle[k+1] # following node in the cycle
                 end
                 # we can choose a cycle iif the edge exists and the cross test is successful
-                @constraint(model, y[c, k] <= x[i, j]*ksi[i, j, k])
+                @constraint(model, y[c, k] <= x[i, j]*ksi_s[i, j, k])
             end 
         end
         

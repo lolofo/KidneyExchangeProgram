@@ -72,7 +72,7 @@ function get_failure_rates(kep_graph::MetaDiGraph, distribution::String)
         # Failure rates depend on the chosen distribution of uncertainties
         if distribution == "Constant"
             # constant failure rates equal to 70%
-            set_prop!(kep_graph, edge, :failure, 0.21)
+            set_prop!(kep_graph, edge, :failure, 0.70)
         elseif distribution == "Binomial"
             if rand() < 0.25
                 # random failure rates equal to 10% on average for 25% edges
