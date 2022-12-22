@@ -169,7 +169,7 @@ function recourseClusterProblem(x, ksi, C, vertic_cycles, U, cycles)
     
     if has_duals(model)
         for c in C
-            dual_delta[c] = dual(constraint_by_name(model, "cons_delta_"*str(c)))
+            dual_delta[c] = dual(constraint_by_name(model, "cons_delta_"*string(c)))
 
             current_cycle = cycles[c]
 

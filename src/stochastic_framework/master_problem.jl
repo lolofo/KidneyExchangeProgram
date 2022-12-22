@@ -167,3 +167,37 @@ function masterClusterProblem(kep_graph, ClusterSize, C, cycles, U, vertic_cycle
     return(Dict("model" => model))
 end
 ;
+
+
+
+### the updates of the master problem for the 
+
+"""
+    addThetaCluster
+# Parameters
+*`model` : the master problem
+* `nb_scenar` : the number of scenarios
+"""
+function addThetaCluster(model, nb_scenar, C, U)
+    # add the new var
+    @variable(model, theta[k in 1:1:nb_scenar])
+
+    # update the objective
+    @objective(model, Max, sum(model[:z][c]U[c] for c in C) + (1/nb_scenar)*sum(model[:theta][k] for k in 1:1:nb_scenar))
+end;
+
+
+"""
+
+"""
+function updateCluster(kep_graph, model, C, ksi_k, dual, k)
+    V = nv(kep_graph)
+
+    lambda = dual["dual_lambda"]
+    mu = dual["dual_mu"]
+    delta = dual["dual_delta"]
+
+    @constraint(model, model[:theta][k] <= sum(sum(sum(lambda[i,j,c]*model[:x][i,j]*ksi_k[i,j] for i in 1:1:V) for j in 1:1:V) for c in C) + sum(mu[i] for i in 1:1:V) + sum(delta[c] for c in C))
+
+end
+;
