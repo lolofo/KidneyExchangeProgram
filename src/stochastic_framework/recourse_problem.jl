@@ -119,13 +119,13 @@ function recourseClusterProblem(x, ksi, C, vertic_cycles, U, cycles)
 
     # rescouse variables (with relaxation)
     @variable(model, y[c in C] >= 0)
-    @objective(model, Min, sum(y[c]*U[c] for c in C))
+    @objective(model, Max, sum(y[c]*U[c] for c in C))
 
     for c in C
 
         # constraint for the variable Delta
         cons_y = @constraint(model, y[c]<=1)
-        set_name(cons_y, "cons_y_"*str(c))
+        set_name(cons_y, "cons_delta_"*string(c))
 
         current_cycle = cycles[c]
         for k in 1:1:length(current_cycle)
@@ -139,14 +139,14 @@ function recourseClusterProblem(x, ksi, C, vertic_cycles, U, cycles)
             end
             # we can choose a cycle iif the edge exists and the cross test is successful
             cons = @constraint(model, y[c] <= x[i, j]*ksi[i, j])
-            set_name(cons, "cons_"*string(c)*string(i)*string(j))
+            set_name(cons, "cons_lambda_"*string(c)*"_"*string(i)*"_"*string(j))
         end 
     end
     
     for (v, C_v) in vertic_cycles
         # each node must be at most in one cycle
         cons = @constraint(model, sum(y[c] for c in C_v)<=1)
-        set_name(cons, "cons_"*string(v))
+        set_name(cons, "cons_mu_"*string(v))
     end
 
     # optimisation 
@@ -169,8 +169,8 @@ function recourseClusterProblem(x, ksi, C, vertic_cycles, U, cycles)
     
     if has_duals(model)
         for c in C
-            
             dual_delta[c] = dual(constraint_by_name(model, "cons_y_"*str(c)))
+
             current_cycle = cycles[c]
 
             for k in 1:1:length(current_cycle)
@@ -182,12 +182,12 @@ function recourseClusterProblem(x, ksi, C, vertic_cycles, U, cycles)
                 else
                     j = current_cycle[k+1] # following node in the cycle
                 end
-                dual_lambda[i,j,c] = dual(constraint_by_name(model, "cons_"*string(c)*string(i)*string(j)))
+                dual_lambda[i,j,c] = dual(constraint_by_name(model, "cons_lambda_"*string(c)*"_"*string(i)*"_"*string(j)))
             end 
         end
         
         for (v, C_v) in vertic_cycles
-            dual_mu[v] = dual(constraint_by_name(model, "cons_"*string(v)))
+            dual_mu[v] = dual(constraint_by_name(model, "cons_mu_"*string(v)))
         end
     else
         print("No dual : error stop the L shape methode")

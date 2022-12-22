@@ -10,7 +10,7 @@ function getScenario(failureRate)
     T = [] 
     for fail in failureRate
         d = Binomial(1, fail)
-        append!(T, rand(d, 1))
+        append!(T, rand(d, 1)[1])
     end
     return T
 end
@@ -51,8 +51,8 @@ function getScenarioCluster(kep_graph)
     for i in 1:1:n
         for j in 1:1:n
             if has_edge(kep_graph, i, j)
-                d = Binomial(1, get_prop(kep_graph, Edge((i, j)), :failure))
-                S[i, j] = rand(d, 1)
+                d = Binomial(1, 1-get_prop(kep_graph, Edge((i, j)), :failure))
+                S[i, j] = rand(d, 1)[1]
             end 
         end
     end
