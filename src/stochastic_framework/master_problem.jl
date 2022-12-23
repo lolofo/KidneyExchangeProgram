@@ -178,6 +178,8 @@ end
 * `nb_scenar` : the number of scenarios
 """
 function addThetaCluster(model, nb_scenar, C, U)
+
+    V = 1:1:size(model[:x])[1]
     # add the new var
     @variable(model, theta[k in 1:1:nb_scenar])
 

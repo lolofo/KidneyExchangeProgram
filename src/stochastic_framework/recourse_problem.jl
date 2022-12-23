@@ -169,7 +169,8 @@ function recourseClusterProblem(x, ksi, C, vertic_cycles, U, cycles)
     
     if has_duals(model)
         for c in C
-            dual_delta[c] = dual(constraint_by_name(model, "cons_delta_"*string(c)))
+            # the dual for maximization is define as min -objectif so we have to take the opposite
+            dual_delta[c] = -dual(constraint_by_name(model, "cons_delta_"*string(c)))
             current_cycle = cycles[c]
 
             for k in 1:1:length(current_cycle)
@@ -181,12 +182,14 @@ function recourseClusterProblem(x, ksi, C, vertic_cycles, U, cycles)
                 else
                     j = current_cycle[k+1] # following node in the cycle
                 end
-                dual_lambda[i,j,c] = dual(constraint_by_name(model, "cons_lambda_"*string(c)*"_"*string(i)*"_"*string(j)))
+                # the dual for maximization is define as min -objectif so we have to take the opposite
+                dual_lambda[i,j,c] = -dual(constraint_by_name(model, "cons_lambda_"*string(c)*"_"*string(i)*"_"*string(j)))
             end 
         end
         
         for (v, C_v) in vertic_cycles
-            dual_mu[v] = dual(constraint_by_name(model, "cons_mu_"*string(v)))
+            # the dual for maximization is define as min -objectif so we have to take the opposite
+            dual_mu[v] = -dual(constraint_by_name(model, "cons_mu_"*string(v)))
         end
     else
         print("No dual : error stop the L shape methode")
