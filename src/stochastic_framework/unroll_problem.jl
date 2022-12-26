@@ -14,12 +14,13 @@ This function has the objective to solve the problem of the kidney exchange prog
 ksi_s[i,j,k]
 
 # Return
+The unroll model, ready to be optimize.
 
 """
 function unrollClusterProblem(kep_graph, ClusterSize, C, cycles, U, ksi_s, vertic_cycles)
 
     V = vertices(kep_graph) # the vertices of our graph
-    K = 1:1:size(ksi_s)[3]
+    K = 1:1:size(ksi_s)[3] # the different scenarios
     
     model = Model(GLPK.Optimizer)
 
@@ -43,7 +44,7 @@ function unrollClusterProblem(kep_graph, ClusterSize, C, cycles, U, ksi_s, verti
     end
 
     # unroll all the constraints for all the scenarios
-    for k in K
+    for scenar in K
         for c in C
             current_cycle = cycles[c]
             for k in 1:1:length(current_cycle)
@@ -56,13 +57,13 @@ function unrollClusterProblem(kep_graph, ClusterSize, C, cycles, U, ksi_s, verti
                     j = current_cycle[k+1] # following node in the cycle
                 end
                 # we can choose a cycle iif the edge exists and the cross test is successful
-                @constraint(model, y[c, k] <= x[i, j]*ksi_s[i, j, k])
+                @constraint(model, y[c, scenar] <= x[i, j]*ksi_s[i, j, scenar])
             end 
         end
         
         for (v, C_v) in vertic_cycles
             # each node must be at most in one cycle
-            @constraint(model, sum(y[c, k] for c in C_v)<=1)
+            @constraint(model, sum(y[c, scenar] for c in C_v)<=1)
         end
     end
     return(Dict("model" => model))

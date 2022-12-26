@@ -95,16 +95,15 @@ end
 ################################################################################################
 
 
-
-"""
-In this part we propose a new insiste on the kindey exchange programe based on cluster
-"""
+### the clustering method ###
+#############################
 
 """ 
     masterClusterProblem
 
 This function will initiate the master problem.
 The master problem here will try to solve the mean value problem.
+Thanks to this function we will have access to the x_{EV}, convenient to calculate the VSS
 
 # Parameters
 * `kep_graph` : the kep graph
@@ -127,6 +126,7 @@ function masterClusterProblem(kep_graph, ClusterSize, C, cycles, U, vertic_cycle
 
     # the mean value problem variable.
     @variable(model, 1 >= z[c in C] >=0)
+
     @objective(model, Max, sum(z[c]U[c] for c in C))
     
     # lets define the clustering constraints
@@ -169,10 +169,14 @@ end
 
 
 
-### the updates of the master problem for the 
+### the updates of the master problem for the ###
+#################################################
 
 """
     addThetaCluster
+
+This function is part of the l-shape method. It will modify the objective of the cluster problem.
+
 # Parameters
 *`model` : the master problem
 * `nb_scenar` : the number of scenarios
@@ -184,12 +188,23 @@ function addThetaCluster(model, nb_scenar, C, U)
     @variable(model, theta[k in 1:1:nb_scenar])
 
     # update the objective
-    @objective(model, Max, sum(model[:z][c]U[c] for c in C) + (1/nb_scenar)*sum(model[:theta][k] for k in 1:1:nb_scenar))
+    # sum(model[:z][c]U[c] for c in C) + 
+    @objective(model, Max, (1/nb_scenar)*sum(model[:theta][k] for k in 1:1:nb_scenar))
 end;
 
 
 """
+    updateCluster
 
+This function will add the L-type constraints, to the master masterProblem
+
+# Parameters
+* `kep_graph` : the graph of the kidney exchange problem
+* `model` : the master problem
+* `C`: the list of the cycle index
+* `ksi_k` : the scenario, it's an array of shape (|V|, |V|)
+* dual : a dictionnary containing the dual solution corresponding to the scenario ksi_k
+* `k` : the index of the scenario
 """
 function updateCluster(kep_graph, model, C, ksi_k, dual, k)
     V = nv(kep_graph)
@@ -199,6 +214,5 @@ function updateCluster(kep_graph, model, C, ksi_k, dual, k)
     delta = dual["dual_delta"]
 
     @constraint(model, model[:theta][k] <= sum(sum(sum(lambda[i,j,c]*model[:x][i,j]*ksi_k[i,j] for i in 1:1:V) for j in 1:1:V) for c in C) + sum(mu[i] for i in 1:1:V) + sum(delta[c] for c in C))
-
 end
 ;

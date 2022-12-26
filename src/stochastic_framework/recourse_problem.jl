@@ -174,8 +174,10 @@ function recourseClusterProblem(x, ksi, C, vertic_cycles, U, cycles)
             current_cycle = cycles[c]
 
             for k in 1:1:length(current_cycle)
+                
                 i = current_cycle[k]
                 j = Nothing # for initialisation purposes
+
                 if k==length(current_cycle)
                     # if we are at the end the following node is the first one
                     j = current_cycle[1] 
