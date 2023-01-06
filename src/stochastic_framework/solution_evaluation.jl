@@ -84,9 +84,9 @@ end
 ;
 
 """
-evaluateSolution_ws
+clusterProblem_ws
 
-This function allow us to evaluate the wait and see problem
+This function crite the wait and see problem
 
 # Parameters
 
