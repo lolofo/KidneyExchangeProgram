@@ -170,7 +170,7 @@ This functions will return
 The dual solutions are decomposed into three groups lambda, mu and Delta which corresponds to the different constraints of the recourse
 problem.
 """
-function solveRecourseClusterProblem(model, x, ksi, C, vertic_cycles, U, cycles)
+function solveRecourseClusterProblem(model, x, C, vertic_cycles, cycles)
     # optimisation 
     # handle exception because julia error aren't good.
     try
@@ -238,6 +238,7 @@ There is only one constraint that need to be modified for our problem.
 # `ksi` : the scenario we are dealing with
 """
 function modifyRecourseClusterProblem(model, x, C, ksi)
+
     for c in C
         current_cycle = cycles[c]
         for k in 1:1:length(current_cycle)
@@ -248,6 +249,7 @@ function modifyRecourseClusterProblem(model, x, C, ksi)
             else
                 j = current_cycle[k+1]
             end
+
             # delete the constraint
             delete(model, constraint_by_name(model, "cons_lambda_"*string(c)*"_"*string(i)*"_"*string(j)))
 
