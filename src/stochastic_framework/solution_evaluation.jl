@@ -13,6 +13,7 @@ function evaluate_solution(nb_scenar, x, C, vertic_cycles, U, cycles)
     obj = 0
     for i in 1:1:(nb_scenar)
         if j == 0
+            j += 1 
             model = recourseClusterProblem(x, ksi[:, :, i], C, vertic_cycles, U, cycles)["model"]
             obj += objective_value(model)
         else
