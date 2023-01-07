@@ -27,7 +27,7 @@ This method uses functions available in the files :
 # `vertic_cycles` : a Julia dictionnary. for each key the value is a list corresponding to the cycles involving the key
 # `ksi` : the tensor of the scenarios
 # `itmax` : the number of maximum iteration
-# `verbose` : verbose during the exectution
+# `verbose` : if true, the main steps will be printed on the standard output.
 
 # Returns
 This method returns a dictionnary with the following keys :
