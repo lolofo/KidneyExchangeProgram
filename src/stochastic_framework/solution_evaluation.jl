@@ -1,15 +1,8 @@
-"""
-In this file we propose a series of methods which will 
-
-"""
-
 include(join(["recourse_problem.jl"], Base.Filesystem.path_separator))
 include(join(["..", "..", "utils", "monte_carlo.jl"], Base.Filesystem.path_separator))
 
-
-
 """
-evaluateSolution_ls
+    evaluateSolution_ls
 
 This function allow us to evaluate the L-shape solution
 
@@ -23,10 +16,7 @@ This function allow us to evaluate the L-shape solution
                     which involve the node i
 *`U` : the utility of each cycle in our cycles (of shape |C|)
 *`cycles` : the array of the cycles of length <= k
-
-
 """
-
 function evaluateSolution_ls(kep_graph, nb_scenar, x, C, vertic_cycles, U, cycles)
     ksi = getScenarioClusterK(kep_graph, nb_scenar)
     j = 0
@@ -50,8 +40,9 @@ function evaluateSolution_ls(kep_graph, nb_scenar, x, C, vertic_cycles, U, cycle
 end
 ;
 
+
 """
-evaluateSolution_ws
+    evaluateSolution_ws
 
 This function allow us to evaluate the wait and see problem
 
@@ -64,9 +55,7 @@ This function allow us to evaluate the wait and see problem
                     which involve the node i
 *`U` : the utility of each cycle in our cycles (of shape |C|)
 *`cycles` : the array of the cycles of length <= k
-
 """
-
 function evaluateSolution_ws(kep_graph, nb_scenar, C, vertic_cycles, U, cycles)
     ksi = getScenarioClusterK(kep_graph, nb_scenar)
     j = 0
@@ -83,8 +72,9 @@ function evaluateSolution_ws(kep_graph, nb_scenar, C, vertic_cycles, U, cycles)
 end
 ;
 
+
 """
-clusterProblem_ws
+    clusterProblem_ws
 
 This function crite the wait and see problem
 
@@ -98,7 +88,6 @@ This function crite the wait and see problem
 *`U` : the utility of each cycle in our cycles (of shape |C|)
 * `vertic_cycles` : a dictionnary, at the key i of this list, give the a list of the index of the cycles
                     which involve the node i
-
 """
 function clusterProblem_ws(kep_graph, ksi, ClusterSize, C, cycles, U, vertic_cycles)
 
@@ -156,6 +145,5 @@ function clusterProblem_ws(kep_graph, ksi, ClusterSize, C, cycles, U, vertic_cyc
     end
 
     return model
-
 end
 ;
