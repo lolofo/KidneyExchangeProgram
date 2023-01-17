@@ -38,7 +38,7 @@ function checkClusterConstraint(theta, dual, x, ksi, tol)
     s = s1 + s2 + s3 + tol
 
     # should we add the constraint
-    # if theta < s
+    # if theta < s ⇒ the constraint is already satisfied (useless)
     res = theta < s ? false : true
 
     return res
@@ -71,7 +71,15 @@ This method returns a dictionnary with the following keys :
 * `first_level_var` : the x value.
 * `objective_value` : the objective value.
 """
-function LshapeClusterMethod(kep_graph, ClusterSize, C, cycles, U, vertic_cycles, ksi, itmax=100000, tol=1e-4, verbose = true)
+function LshapeClusterMethod(
+    kep_graph, 
+    ClusterSize, 
+    C, 
+    cycles, 
+    U, 
+    vertic_cycles, 
+    ksi, 
+    itmax=100000, tol=1e-4, verbose = true)
 
     verbose && println("Start of the L-shape method for the cluster problem");
 
@@ -113,20 +121,19 @@ function LshapeClusterMethod(kep_graph, ClusterSize, C, cycles, U, vertic_cycles
         # update the master problem and its solution
         optimize!(master_problem);
         sol = value.(master_problem[:x])                 # x value
-        theta = value.(master_problem[:theta])           # θ values
+        θ = value.(master_problem[:theta])               # θ values
         master_val = objective_value(master_problem)     # objective value
 
         cpt = 0
 
-        # ∀ the scenario
+        # ∀ the scenarios
         for k in 1:1:size(ksi)[3]
-
             curr_recourse = recourse_pbs[k]
             modifyRecourseClusterProblem(curr_recourse, sol, C, ksi[:, :, k])
             res_recourse = solveRecourseClusterProblem(curr_recourse, sol, C, vertic_cycles, cycles)
             dual = res_recourse["dual"]
             # check if the dual got us a good constraint
-            buff = checkClusterConstraint(theta[k], dual, sol, ksi[:, :, k], tol)
+            buff = checkClusterConstraint(θ[k], dual, sol, ksi[:, :, k], tol)
             if buff
                 updateCluster(kep_graph, master_problem, C, ksi[:, :, k], dual, k)
                 cpt += 1
@@ -136,18 +143,20 @@ function LshapeClusterMethod(kep_graph, ClusterSize, C, cycles, U, vertic_cycles
 
         # updates and log
         #################
+        
+        # logs every 10 iterations
+        if it % 10 == 0
+            verbose && print("Iteration ("*string(it)*") >> ") ;
+            verbose && print("objective value : "*string(master_val))
+            verbose && println()
+        end
 
         # no constraint added ⇒ the optimality is reached
         if cpt == 0
             optimal = true
         end
 
-        if it % 10 == 0
-            verbose && print("Iteration ("*string(it)*") >> ") ;
-            verbose && print("objective value : "*string(master_val))
-            verbose && println()
-        end
-        
+        # maximum number of ietration reached
         if it >= itmax
             verbose && println("The maximum number of iteration is reached : stop");
             optimal = true
@@ -158,13 +167,13 @@ function LshapeClusterMethod(kep_graph, ClusterSize, C, cycles, U, vertic_cycles
             verbose && println("The stopping criterion is reached");
             verbose && println("The objective value : "*string(master_val))
         end
-
     end
 
     # at last we check is the problem is at an optimal status
     ##########################################################
 
     optimal = it < itmax ? true : false
+    !optimal && println("max it reached ⇒ increase the maximum number of iterations")
 
     return(Dict(
         "first_level_var"=>sol,
