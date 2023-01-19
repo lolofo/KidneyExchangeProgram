@@ -2,6 +2,7 @@
 This file will contain the algorithms we use to solve our different problems.
 """
 
+
 using JuMP;
 using GLPK;
 
