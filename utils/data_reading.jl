@@ -38,7 +38,7 @@ function read_kep_file(wmd_file::String, dat_file::String)
         # /!\ Pairs are numbered from 0 in the second part of the file
         source = parse(Int, splitted_line[1]) + 1
         destination = parse(Int, splitted_line[2]) + 1
-        weight = parse(Int, splitted_line[3])
+        weight = 1 #parse(Int, splitted_line[3])
 
         # do not add an edge that has a zero weight
         if weight > 0
