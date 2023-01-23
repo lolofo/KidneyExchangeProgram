@@ -1,5 +1,6 @@
 using JuMP;
 using GLPK;
+using HiGHS;
 
 # the cluster problem
 #####################
@@ -23,7 +24,8 @@ This functions will return
 """
 function recourseClusterProblem(x, ksi, C, vertic_cycles, U, cycles)
     
-    model = Model(GLPK.Optimizer)
+    model = Model(HiGHS.Optimizer)
+    set_silent(model)
 
     # rescouse variables (with relaxation)
     @variable(model, y[c in C] >= 0)

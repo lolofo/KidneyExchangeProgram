@@ -1,4 +1,4 @@
-using Random, MetaGraphs, SimpleWeightedGraphs, Graphs, JuMP, DelimitedFiles, Distributions, GLPK
+using JuMP, GLPK, HiGHS
 
 """ 
     completRecourseProblem
@@ -14,7 +14,8 @@ This is the deterministic version of the problem with the complete recourse.
 """
 function completRecourseProblem(C, vertic_cycles , U, S_P)
     
-    model = Model(GLPK.Optimizer)
+    model = Model(HiGHS.Optimizer)
+    set_silent(model)
 
     @variable(model, x[i in C], Bin)
 

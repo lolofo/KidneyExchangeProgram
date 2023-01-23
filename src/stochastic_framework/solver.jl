@@ -68,9 +68,11 @@ This method uses functions available in the files :
 
 # Returns
 This method returns a dictionnary with the following keys :
-* `master_problem` : the master problem ready to be optimize.
-* `first_level_var` : the x value.
+* `first_level_var` : the value of x i.e. the first level solution.
 * `objective_value` : the objective value.
+* `nb_added_constraints` : the number of constraints we added through the iterations of the algorithm
+* `optimal` : a boolean value : true : the problem is solved
+* `nb_iterations` : the number of iterations the algorithm did
 """
 function LshapeClusterMethod(
     kep_graph, 
