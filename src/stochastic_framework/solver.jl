@@ -107,7 +107,7 @@ function LshapeClusterMethod(
 
     for k in 1:1:size(ksi)[3]
         curr_recourse = recourse_pbs[k]
-        modifyRecourseClusterProblem(curr_recourse, sol, C, ksi[:, :, k])
+        modifyRecourseClusterProblem(curr_recourse, sol, C, cycles, ksi[:, :, k])
         res_recourse = solveRecourseClusterProblem(curr_recourse, sol, C, vertic_cycles, cycles)
         dual = res_recourse["dual"]
         updateCluster(kep_graph, master_problem, C, ksi[:, :, k], dual, k)
@@ -132,7 +132,7 @@ function LshapeClusterMethod(
         # ∀ the scenarios
         for k in 1:1:size(ksi)[3]
             curr_recourse = recourse_pbs[k]
-            modifyRecourseClusterProblem(curr_recourse, sol, C, ksi[:, :, k])
+            modifyRecourseClusterProblem(curr_recourse, sol, C, cycles, ksi[:, :, k])
             res_recourse = solveRecourseClusterProblem(curr_recourse, sol, C, vertic_cycles, cycles)
             dual = res_recourse["dual"]
             # check if the dual got us a good constraint

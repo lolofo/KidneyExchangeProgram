@@ -145,12 +145,13 @@ The objective is, at each iteration of the L-shape method, to not create again a
 There is only one constraint that need to be modified for our problem.
 
 # Parameters
-# `model` : the model of the recourse problem
-# `x` : the first level value variable
-# `C` : the cycle's indexes
-# `ksi` : the scenario we are dealing with
+* `model` : the model of the recourse problem
+* `x` : the first level value variable
+* `C` : the cycle's indexes
+* `cycles` : the real cycles
+* `ksi` : the scenario we are dealing with
 """
-function modifyRecourseClusterProblem(model, x, C, ksi)
+function modifyRecourseClusterProblem(model, x, C, cycles, ksi)
 
     for c in C
         current_cycle = cycles[c]
