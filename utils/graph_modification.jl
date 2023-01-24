@@ -78,6 +78,7 @@ function getUselessNodes(kep_graph, size_cluster=3)
     nb_nodes = nv(kep_graph)
     matrix_nodes_temp = Int64[j for i in 1:nb_nodes, j in 1:nb_nodes]
     matrix_nodes = Int64[j for i in 1:nb_nodes, j in 1:nb_nodes]
+    res = []
     for i in 1:1:nb_nodes
         matrix_nodes_temp[i, :] = dijkstra_shortest_paths(kep_graph, i).dists
     end
@@ -93,5 +94,22 @@ function getUselessNodes(kep_graph, size_cluster=3)
         end
     end
     matrix_nodes = sum(matrix_nodes, dims=2)
-    return matrix_nodes
+    for i in 1:1:length(matrix_nodes)
+        if(matrix_nodes[i]==0)
+            append!(res, i)
+        end
+    end
+    return res
+end
+
+
+function removetUselessNodes(kep_graph, list_uselessCycles)
+    j = 0
+    for node in reverse(list_uselessCycles)
+        # after deleting a node, all other nodes are renamed.
+        # that why it is better to do it backward
+        println(node)
+        rem_vertex!(kep_graph, node)
+    end
+    return kep_graph
 end
