@@ -74,7 +74,7 @@ end
 ;
 
 
-function removeUselessNodes(kep_graph, size_cluster=3)
+function getUselessNodes(kep_graph, size_cluster=3)
     nb_nodes = nv(kep_graph)
     matrix_nodes_temp = Int64[j for i in 1:nb_nodes, j in 1:nb_nodes]
     matrix_nodes = Int64[j for i in 1:nb_nodes, j in 1:nb_nodes]
