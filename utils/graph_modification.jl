@@ -21,7 +21,14 @@ function addSpecificEdges(kep_graph, list_edges, fail, weight)
 end;
 
 """
+    addRandomEdges
 
+Add one random edge
+
+# Parameters
+* `kep_graph::MetaDiGraph` : graph describing the pairs and compatibilities
+* `fail` : failure rate to affect
+* `weight` : weight to affect
 """
 function addRandomEdge(kep_graph, fail, weight)
     not_stop = true
@@ -42,7 +49,7 @@ end
 """
     addRandomEdges
 
-Add random edges
+Add many random edges. The quantity is define with ratio parameters : ratio x nb_remaining_edge
 
 # Parameters
 * `kep_graph::MetaDiGraph` : graph describing the pairs and compatibilities
@@ -62,6 +69,20 @@ function addRandomEdges(kep_graph, ratio, fail, weight)
 end
 ; 
 
+"""
+addRandomCycles
+
+We add a random edge until the number of cycles is reached. Since an edge can create many cycles, it is possible to add
+more nb_cycles in the graph.
+
+# Parameters
+* `kep_graph::MetaDiGraph` : graph describing the pairs and compatibilities
+* `nb_cycles` : number cycle with want at least 
+* `fail` : failure rate to affect
+* `weight` : weight to affect
+* `size_cluster` : cluster size
+"""
+
 function addRandomCycles(kep_graph, nb_cycles, fail, weight, size_cluster=3)
     curr_nb_cycles = length(simplecycles_limited_length(kep_graph, size_cluster, 10^6))
     #print(curr_nb_cycles,  nb_cycles)
@@ -73,6 +94,15 @@ function addRandomCycles(kep_graph, nb_cycles, fail, weight, size_cluster=3)
 end
 ;
 
+"""
+getUselessNodes
+
+Return a list of nodes which are not involve in cycle with given length 
+
+# Parameters
+* `kep_graph::MetaDiGraph` : graph describing the pairs and compatibilities
+* `size_cluster` : cluster size
+"""
 
 function getUselessNodes(kep_graph, size_cluster=3)
     nb_nodes = nv(kep_graph)
@@ -102,6 +132,15 @@ function getUselessNodes(kep_graph, size_cluster=3)
     return res
 end
 
+"""
+removetUselessNodes
+
+Remove nodes which are not involve in cycle with given length 
+
+# Parameters
+* `kep_graph::MetaDiGraph` : graph describing the pairs and compatibilities
+* `size_cluster` : cluster size
+"""
 
 function removetUselessNodes(kep_graph, size_cluster=3)
     list_uselessCycles = getUselessNodes(kep_graph, size_cluster)
