@@ -103,12 +103,11 @@ function getUselessNodes(kep_graph, size_cluster=3)
 end
 
 
-function removetUselessNodes(kep_graph, list_uselessCycles)
-    j = 0
+function removetUselessNodes(kep_graph, size_cluster=3)
+    list_uselessCycles = getUselessNodes(kep_graph, size_cluster)
     for node in reverse(list_uselessCycles)
         # after deleting a node, all other nodes are renamed.
         # that why it is better to do it backward
-        println(node)
         rem_vertex!(kep_graph, node)
     end
     return kep_graph
