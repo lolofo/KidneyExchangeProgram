@@ -72,3 +72,26 @@ function addRandomCycles(kep_graph, nb_cycles, fail, weight, size_cluster=3)
     return kep_graph
 end
 ;
+
+
+function removeUselessNodes(kep_graph, size_cluster=3)
+    nb_nodes = nv(kep_graph)
+    matrix_nodes_temp = Int64[j for i in 1:nb_nodes, j in 1:nb_nodes]
+    matrix_nodes = Int64[j for i in 1:nb_nodes, j in 1:nb_nodes]
+    for i in 1:1:nb_nodes
+        matrix_nodes_temp[i, :] = dijkstra_shortest_paths(kep_graph, i).dists
+    end
+
+    for i in 1:1:nb_nodes
+        for j in 1:1:nb_nodes
+            if matrix_nodes_temp[i, j]>size_cluster || matrix_nodes_temp[j, i]>size_cluster || matrix_nodes_temp[i, j] + matrix_nodes_temp[j, i]>size_cluster
+                matrix_nodes[i, j] = 0
+            else
+                matrix_nodes[i, j] = matrix_nodes_temp[i, j] + matrix_nodes_temp[i, j] 
+            end
+            
+        end
+    end
+    matrix_nodes = sum(matrix_nodes, dims=2)
+    return matrix_nodes
+end
