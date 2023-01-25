@@ -142,12 +142,12 @@ Remove nodes which are not involve in cycle with given length
 * `size_cluster` : cluster size
 """
 
-function removetUselessNodes(kep_graph, size_cluster=3)
+function removeUselessNodes(kep_graph, size_cluster=3)
     list_uselessCycles = getUselessNodes(kep_graph, size_cluster)
     for node in reverse(list_uselessCycles)
         # after deleting a node, all other nodes are renamed.
         # that why it is better to do it backward
         rem_vertex!(kep_graph, node)
     end
-    return kep_graph
+    return kep_graph, list_uselessCycles
 end
