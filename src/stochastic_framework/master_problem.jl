@@ -21,7 +21,7 @@ Thanks to this function we will have access to the x_{EV}, convenient to calcula
 * `U` : the vector of the utility of the cycles
 
 # Return 
-* this function will return the master problem coded with its constraints but with no objective
+* this function will return the master problem coded with its constraints
 """
 function masterClusterProblem(kep_graph, ClusterSize, C, cycles, U, vertic_cycles)
 

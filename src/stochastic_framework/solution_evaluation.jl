@@ -31,7 +31,8 @@ function evaluateSolution_ls(kep_graph, nb_scenar, x, C, vertic_cycles, U, cycle
             optimize!(model)
             obj += objective_value(model)
         else
-            modifyRecourseClusterProblem(model, x, C, ksi[:, :, i])
+            
+            modifyRecourseClusterProblem(model, x, C, cycles, ksi[:, :, i])
             optimize!(model)
             obj += objective_value(model)
         end
@@ -56,13 +57,13 @@ This function allow us to evaluate the wait and see problem
 *`U` : the utility of each cycle in our cycles (of shape |C|)
 *`cycles` : the array of the cycles of length <= k
 """
-function evaluateSolution_ws(kep_graph, nb_scenar, C, vertic_cycles, U, cycles)
+function evaluateSolution_ws(kep_graph, nb_scenar, C, vertic_cycles, U, cycles, ClusterSize)
     ksi = getScenarioClusterK(kep_graph, nb_scenar)
     j = 0
     obj = 0
     model = Nothing
     for i in 1:1:(nb_scenar)
-        
+
         model = clusterProblem_ws(kep_graph, ksi[:, :, i], ClusterSize, C, cycles, U, vertic_cycles)
         optimize!(model)
         obj += objective_value(model)
