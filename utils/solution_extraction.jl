@@ -18,7 +18,8 @@ function getCluster(graph, sol)
         if i ∉ stacklabel
             cluster[k] = [i]
             for j in nodelabel[(i+1):length(nodelabel)]
-                if sol[i, j] == 1 
+                # we compare to 0.5 in case sol[i,j] == 0.999999999 it can happends during the B&B algo
+                if sol[i, j] > 0.5 
                     append!(stacklabel, j)
                     append!(cluster[k], j)
                 end

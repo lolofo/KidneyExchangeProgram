@@ -55,7 +55,7 @@ This method uses functions available in the files :
 - recourse_problem.jl
 - master_problem.jl
 
-# Parameters
+# Global Parameters
 * `kep_graph` : the graph of the kidney exchange program
 * `ClusterSize` : the size of the clusters
 * `C` : the list of the cycle index
@@ -65,7 +65,13 @@ This method uses functions available in the files :
 * `ksi` : the tensor of the scenarios
 * `itmax` : the number of maximum iteration
 * `verbose` : if true, the main steps will be printed on the standard output.
-* `cvar`: 
+
+# Big instances heuristic
+
+
+# Risk averse params
+* `cvar`: if true we proceed risk averse optimization
+* `risk_level` : float, the risk level for the risk averse optimization
 
 # Returns
 This method returns a dictionnary with the following keys :
@@ -74,6 +80,7 @@ This method returns a dictionnary with the following keys :
 * `nb_added_constraints` : the number of constraints we added through the iterations of the algorithm
 * `optimal` : a boolean value : true : the problem is solved
 * `nb_iterations` : the number of iterations the algorithm did
+* `mp` : the master problem (ready to be optimize again)
 """
 function LshapeClusterMethod(
     kep_graph, 
@@ -84,8 +91,10 @@ function LshapeClusterMethod(
     vertic_cycles, 
     ksi,
     itmax=100000, tol=1e-4, verbose = true,
+
     cvar = false,
-    risk_level = 0)
+    risk_level = 0
+    )
 
     verbose && println("Start of the L-shape method for the cluster problem");
 
@@ -192,7 +201,16 @@ function LshapeClusterMethod(
         "objective_value" => master_val,
         "nb_added_constraints" => nb_added_constraints,
         "optimal" => optimal,
-        "nb_iterations" => it
+        "nb_iterations" => it,
+        "mp" => master_problem
     ));
 end
 ;
+
+
+
+# Heuristic for big instances
+#############################
+
+
+

@@ -141,7 +141,6 @@ Remove nodes which are not involve in cycle with given length
 * `kep_graph::MetaDiGraph` : graph describing the pairs and compatibilities
 * `size_cluster` : cluster size
 """
-
 function removeUselessNodes(kep_graph, size_cluster=3)
     list_uselessCycles = getUselessNodes(kep_graph, size_cluster)
     for node in reverse(list_uselessCycles)
