@@ -9,11 +9,13 @@ This function allow us to plot in the same color the clusters
 *`graph` : the kep graph
 *`clusterUsefull` : The cluster with |cluster|>=2
 """
-function plotSolutionCluster(graph, clusterUsefull)
+function plotSolutionCluster(graph, clusterUsefull, list_uselessCycles)
     n_node = nv(graph)
     n_edge = ne(graph)
+
+    len = length(Graphs.vertices(kep_graph)) + length(list_uselessCycles)
+    nodelabel = [v for v in 1:1:len if v ∉ list_uselessCycles]
     
-    nodelabel = [v for v in Graphs.vertices(kep_graph)]
     membership_node = [1 for v in Graphs.vertices(kep_graph)]
     k = 2 
     for (keys, values) in clusterUsefull

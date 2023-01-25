@@ -129,6 +129,7 @@ function extractCycleInformation(g, K, mode)
         end
         merge!(vertic_cycles, Dict(v => C_v))
     end
+    U = [rand(1:4) for i in 1:1:length(U)].*U
 
     res = Dict("Cycles_index" => C, 
     "vertic_cycles" => vertic_cycles, 

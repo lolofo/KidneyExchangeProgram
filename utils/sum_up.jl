@@ -1,18 +1,37 @@
 using DataFrames;
 
+function transform_vertic_cycle(vertic_cycles, C)
+    v_c = Dict()
+    for k in vertic_cycles
+        key = k[1]
+        v_c[key] = []
+        for c in vertic_cycles[key]
+            if c ∈ C 
+                append!(v_c[key], c)
+            end;
+        end;
+        if length(v_c[k[1]])==0
+            pop!(v_c, k[1])
+        end;
+    end;
+    return v_c
+end
 
-
-function sum_up(kep_graph, df, ClusterSize, nb_scenar, nb_scenar_eval)
+function sum_up(kep_graph, df, ClusterSize, nb_scenar, nb_scenar_eval, nb_cycles)
     # read failure rate
     failure_rates = get_failure_rates(kep_graph, "Constant");
 
     # read data
-    data = extractCycleInformation(kep_graph, 3, "sum");
-    C = data["Cycles_index"] 
-    cycles = data["Cycles"]
-    U = data["U"]
-    vertic_cycles = data["vertic_cycles"]
+    data = extractCycleInformation(kep_graph, 2, "sum");
 
+
+    rank_index = rank_index_cycle(data)
+    nb_cycles = min(nb_cycles, length(data["Cycles"]))
+
+    C = data["Cycles_index"][1:nb_cycles]
+    cycles = data["Cycles"][rank_index][1:nb_cycles]
+    U = data["U"][rank_index][1:nb_cycles]
+    vertic_cycles = transform_vertic_cycle(data["vertic_cycles"], C)
     # create scenarios
     ksi = getScenarioClusterK(kep_graph, nb_scenar)
 

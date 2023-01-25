@@ -12,7 +12,6 @@ Add specific edges
 """
 function addSpecificEdges(kep_graph, list_edges, fail, weight)
     n_row = size(list_edges)[1]
-    print(n_row)
     for i in 1:1:n_row
         add_edge!(kep_graph, list_edges[i, 1], list_edges[i, 2], :weight, weight)
         set_prop!(kep_graph, Edge(list_edges[i, 1], list_edges[i, 2]), :failure, fail)
@@ -83,11 +82,9 @@ more nb_cycles in the graph.
 * `size_cluster` : cluster size
 """
 
-function addRandomCycles(kep_graph, nb_cycles, fail, weight, size_cluster=3)
+function addRandomCycles(kep_graph, nb_cycles, fail, weight, size_cluster)
     curr_nb_cycles = length(simplecycles_limited_length(kep_graph, size_cluster, 10^6))
-    #print(curr_nb_cycles,  nb_cycles)
     while length(simplecycles_limited_length(kep_graph, size_cluster, 10^6)) < curr_nb_cycles + nb_cycles
-        #println(length(simplecycles_limited_length(kep_graph, size_cluster, 10^6)))
         addRandomEdge(kep_graph, fail, weight)
     end
     return kep_graph
@@ -104,7 +101,7 @@ Return a list of nodes which are not involve in cycle with given length
 * `size_cluster` : cluster size
 """
 
-function getUselessNodes(kep_graph, size_cluster=3)
+function getUselessNodes(kep_graph, size_cluster)
     nb_nodes = nv(kep_graph)
     matrix_nodes_temp = Int64[j for i in 1:nb_nodes, j in 1:nb_nodes]
     matrix_nodes = Int64[j for i in 1:nb_nodes, j in 1:nb_nodes]
@@ -141,7 +138,7 @@ Remove nodes which are not involve in cycle with given length
 * `kep_graph::MetaDiGraph` : graph describing the pairs and compatibilities
 * `size_cluster` : cluster size
 """
-function removeUselessNodes(kep_graph, size_cluster=3)
+function removeUselessNodes(kep_graph, size_cluster)
     list_uselessCycles = getUselessNodes(kep_graph, size_cluster)
     for node in reverse(list_uselessCycles)
         # after deleting a node, all other nodes are renamed.
