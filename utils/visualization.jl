@@ -40,6 +40,24 @@ function plotSolutionCluster(graph, clusterUsefull)
         nodelabelangleoffset=π/4,
         layout=circular_layout)
 end
-
-
 ;
+
+"""
+plot_graph
+
+This function allow us to plot in the same color the clusters
+
+# Parameters
+
+*`kep_graph` : the kep graph
+*`list_uselessCycles` : node deleted
+"""
+
+function plot_graph(kep_graph, list_uselessCycles)
+    len = length(Graphs.vertices(kep_graph)) + lenght(list_uselessCycles)
+    nodelabel = [v for v in 1:1:len if v ∉ list_uselessCycles]
+    gplot(kep_graph,
+    nodelabel=nodelabel,
+    nodelabelangleoffset=π/4,
+    layout=circular_layout)
+end;
