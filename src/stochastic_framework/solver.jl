@@ -65,6 +65,7 @@ This method uses functions available in the files :
 * `ksi` : the tensor of the scenarios
 * `itmax` : the number of maximum iteration
 * `verbose` : if true, the main steps will be printed on the standard output.
+* `cvar`: 
 
 # Returns
 This method returns a dictionnary with the following keys :
@@ -81,8 +82,10 @@ function LshapeClusterMethod(
     cycles, 
     U, 
     vertic_cycles, 
-    ksi, 
-    itmax=100000, tol=1e-4, verbose = true)
+    ksi,
+    itmax=100000, tol=1e-4, verbose = true,
+    cvar = false,
+    risk_level = 0)
 
     verbose && println("Start of the L-shape method for the cluster problem");
 
@@ -97,13 +100,19 @@ function LshapeClusterMethod(
 
     optimize!(master_problem)
     sol = value.(master_problem[:x])
-    addThetaCluster(master_problem, size(ksi)[3], C, U);
+
+    # update the master problem for our specific task
+    if cvar
+        addCVaRVariables(master_problem, size(ksi)[3], risk_level)
+    else
+        addThetaCluster(master_problem, size(ksi)[3], C, U);
+    end;
     
     recourse_pbs = []
     for k in 1:1:size(ksi)[3]
         model = recourseClusterProblem(sol, ksi[:, :, k], C, vertic_cycles, U, cycles)
         append!(recourse_pbs, [model])
-    end
+    end;
 
     for k in 1:1:size(ksi)[3]
         curr_recourse = recourse_pbs[k]
@@ -111,7 +120,7 @@ function LshapeClusterMethod(
         res_recourse = solveRecourseClusterProblem(curr_recourse, sol, C, vertic_cycles, cycles)
         dual = res_recourse["dual"]
         updateCluster(kep_graph, master_problem, C, ksi[:, :, k], dual, k)
-    end
+    end;
 
     # optimization loop 
     ####################
@@ -141,8 +150,8 @@ function LshapeClusterMethod(
                 updateCluster(kep_graph, master_problem, C, ksi[:, :, k], dual, k)
                 cpt += 1
                 nb_added_constraints += 1
-            end
-        end
+            end;
+        end;
 
         # updates and log
         #################
@@ -152,25 +161,25 @@ function LshapeClusterMethod(
             verbose && print("Iteration ("*string(it)*") >> ") ;
             verbose && print("objective value : "*string(master_val))
             verbose && println()
-        end
+        end;
 
         # no constraint added ⇒ the optimality is reached
         if cpt == 0
             optimal = true
-        end
+        end;
 
         # maximum number of ietration reached
         if it >= itmax
             verbose && println("The maximum number of iteration is reached : stop");
             optimal = true
-        end
+        end;
 
         # the optimality is reached
         if optimal
             verbose && println("The stopping criterion is reached");
             verbose && println("The objective value : "*string(master_val))
-        end
-    end
+        end;
+    end;
 
     # at last we check is the problem is at an optimal status
     ##########################################################
@@ -184,6 +193,6 @@ function LshapeClusterMethod(
         "nb_added_constraints" => nb_added_constraints,
         "optimal" => optimal,
         "nb_iterations" => it
-    ))
+    ));
 end
 ;

@@ -125,3 +125,33 @@ function updateCluster(kep_graph, model, C, ksi_k, dual, k)
     @constraint(model, model[:theta][k] <= sum(sum(sum(lambda[i,j,c]*model[:x][i,j]*ksi_k[i,j] for i in 1:1:V) for j in 1:1:V) for c in C) + sum(mu[i] for i in 1:1:V) + sum(delta[c] for c in C))
 end
 ;
+
+
+# risk averse optimization
+##########################
+
+"""
+    addCVaRVariables
+
+This function will be usefull for the 
+
+# Parameters
+*`model` : the master problem
+* `nb_scenar` : the number of scenarios
+* `alpha` : float for the risk level
+"""
+function addCVaRVariables(model, nb_scenar, alpha)
+
+    V = 1:1:size(model[:x])[1]
+    # add the new var
+    @variable(model, t)
+    @variable(model, theta[k in 1:1:nb_scenar])
+    @variable(model, pi_var[k in 1:1:nb_scenar]>=0)
+
+    for k in 1:1:nb_scenar
+        @constraint(model, model[:pi_var][k] >= -model[:theta][k] - model[:t])
+    end
+
+    @objective(model, Min, model[:t] + 1/(1-alpha) * (1/nb_scenar)*sum(model[:pi_var][k] for k in 1:1:nb_scenar))
+end
+;
