@@ -1,5 +1,8 @@
 using Graphs;
 
+include(join(["data_reading.jl"], Base.Filesystem.path_separator))
+include(join(["graph_modification.jl"], Base.Filesystem.path_separator))
+include(join(["cluster_utils.jl"], Base.Filesystem.path_separator))
 
 ##############################################################################################
 ##############################################################################################
@@ -148,7 +151,81 @@ end
 
 # TODO : faire une fonction qui permet de réaliser le pre-pro et la lecture
 
+"""
 
+"""
+function transform_vertic_cycle(vertic_cycles, C)
+    v_c = Dict()
+    for k in vertic_cycles
+        key = k[1]
+        v_c[key] = []
+        for c in vertic_cycles[key]
+            if c ∈ C 
+                append!(v_c[key], c)
+            end;
+        end;
+        if length(v_c[k[1]])==0
+            pop!(v_c, k[1])
+        end;
+    end;
+    return v_c
+end
 
+"""
+
+"""
+function get_name_file(number)
+    if number < 10
+        return "0000000" * string(number)
+    else
+        return "000000" * string(number)
+    end
+end;
+    
+
+"""
+
+"""
+
+function read_and_preprocess(number_instance, K, dist, nb_cycles, utility_range=[1, 4])
+    str_number_instance = get_name_file(number_instance)
+    kep_graph = read_kep_file("./_cache/data/MD-00001-"*str_number_instance*".wmd","./_cache/data/MD-00001-"*str_number_instance*".dat");
+    
+    # We remove nodes which are not involve in any cycle of length K
+    kep_graph, temp = removeUselessNodes(kep_graph, K)
+    if nv(kep_graph)==0
+        return Dict("kep_graph" => kep_graph,
+        "Cycles_index" => [], 
+        "vertic_cycles" => nothing, 
+        "Cycles" => nothing, 
+        "P" => nothing,
+        "U" => nothing)
+    else
+        # We set the ditribution
+        failure_rates = get_failure_rates(kep_graph, dist);
+
+        # Extract graph information
+        data = extractCycleInformation(kep_graph, K, "sum", utility_range);
+
+        # select cycle with the best expected values
+        rank_index = rank_index_cycle(data) # les indexes des cycles dont on a besoin
+        nb_cycles = min(nb_cycles, length(data["Cycles"]))
+
+        # store separately graph information according to the selection
+        P = data["P"]
+        C = data["Cycles_index"][rank_index][1:nb_cycles]
+        cycles = data["Cycles"]
+        U = data["U"]
+        vertic_cycles = transform_vertic_cycle(data["vertic_cycles"], C)
+
+        return Dict("kep_graph" => kep_graph,
+        "Cycles_index" => C, 
+        "vertic_cycles" => vertic_cycles, 
+        "Cycles" => cycles, 
+        "P" => P,
+        "U" => U)
+    end
+
+end
 
 
