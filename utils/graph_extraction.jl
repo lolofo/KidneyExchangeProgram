@@ -99,7 +99,7 @@ This function returns a Julia dictionnary with the following keys :
 * `P` : for each cycle, the probability of failure. To get the success do 1 - ...
 * `U` : the utility of each cycle
 """
-function extractCycleInformation(g, K, mode, utility_range=[1, 4])
+function extractCycleInformation(g, K, mode, utility_range=[1, 1])
 
     @assert length(utility_range)==2 "utility_range must be an array of length 2"
 
@@ -186,8 +186,7 @@ end;
 """
 
 """
-
-function read_and_preprocess(number_instance, K, dist, nb_cycles, utility_range=[1, 4])
+function read_and_preprocess(number_instance, K, dist, nb_cycles, utility_range=[1, 1])
     str_number_instance = get_name_file(number_instance)
     kep_graph = read_kep_file("./_cache/data/MD-00001-"*str_number_instance*".wmd","./_cache/data/MD-00001-"*str_number_instance*".dat");
     

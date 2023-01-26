@@ -6,7 +6,7 @@ include(join(["solution_extraction.jl"], Base.Filesystem.path_separator))
 """
 
 """
-function sum_up(number_instance, df, ClusterSize, nb_scenar, nb_scenar_eval, nb_cycles, K=2, cvar=false, dist="Constant")
+function sum_up(number_instance, df, ClusterSize, nb_scenar, nb_scenar_eval, nb_cycles, K=2, dist="Constant", cvar=false)
     # read failure rate
     data = read_and_preprocess(number_instance, K, dist, nb_cycles)
     
