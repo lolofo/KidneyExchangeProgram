@@ -87,7 +87,7 @@ The relevant information here concern the cycle formulation of the kep_graph.
 
 # Parameters
 * `g` : the kep_graph
-* `K` (int): the length of the Cycles
+* `K` : the length of the Cycles
 * `mode`: the method to use to compute the calculus of the utilities
 * `utility_range` : range of the utilities
 
@@ -148,11 +148,14 @@ end
 ;
 
 
+""" 
+transform_vertic_cycle
 
-# TODO : faire une fonction qui permet de réaliser le pre-pro et la lecture
+When select some cycle modify vertic cycle.
 
-"""
-
+# Parameters
+* `vertic_cycles` : a dictionnary with vertices as keys and a list of cycles which involve the key as value
+* `C` (int): index of cycle
 """
 function transform_vertic_cycle(vertic_cycles, C)
     v_c = Dict()
@@ -171,8 +174,12 @@ function transform_vertic_cycle(vertic_cycles, C)
     return v_c
 end
 
-"""
 
+""" 
+get_name_file
+
+# Parameters
+* `number` : an integer
 """
 function get_name_file(number)
     if number < 10
@@ -183,9 +190,25 @@ function get_name_file(number)
 end;
     
 
+""" 
+read_and_preprocess
+
+# Parameters
+* `number_instance` : an integer
+* `K` : the length of the Cycles
+* `dist` : the distribution
+*`nb_cycles` : quantity of cycle considered
+* `utility_range` : if we want to uniformly sample the utilities
+
+# Return 
+This function returns a Julia dictionnary with the following keys :
+* `Cycles_index` : a list of integer each element of the list corresponds to the index of a cycle
+* `vertic_cycles` : a dictionnary with vertices as keys and a list of cycles which involve the key as value
+* `Cycles` : the exhaustive enumeration of the cycles
+* `P` : for each cycle, the probability of failure. To get the success do 1 - ...
+* `U` : the utility of each cycle
 """
 
-"""
 function read_and_preprocess(number_instance, K, dist, nb_cycles, utility_range=[1, 1])
     str_number_instance = get_name_file(number_instance)
     kep_graph = read_kep_file("./_cache/data/MD-00001-"*str_number_instance*".wmd","./_cache/data/MD-00001-"*str_number_instance*".dat");
