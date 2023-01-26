@@ -100,9 +100,9 @@ function solveRecourseClusterProblem(model, x, C, vertic_cycles, cycles)
     dual_delta = zeros(length(C))
     
     if has_duals(model)
-        for c in C
+        for (c_ind, c) in enumerate(C)
             # the dual for maximization is define as min -objectif so we have to take the opposite
-            dual_delta[c] = -dual(constraint_by_name(model, "cons_delta_"*string(c)))
+            dual_delta[c_ind] = -dual(constraint_by_name(model, "cons_delta_"*string(c)))
             current_cycle = cycles[c]
 
             for k in 1:1:length(current_cycle)
@@ -117,7 +117,7 @@ function solveRecourseClusterProblem(model, x, C, vertic_cycles, cycles)
                     j = current_cycle[k+1] # following node in the cycle
                 end
                 # the dual for maximization is define as min -objectif so we have to take the opposite
-                dual_lambda[i,j,c] = -dual(constraint_by_name(model, "cons_lambda_"*string(c)*"_"*string(i)*"_"*string(j)))
+                dual_lambda[i,j,c_ind] = -dual(constraint_by_name(model, "cons_lambda_"*string(c)*"_"*string(i)*"_"*string(j)))
             end 
         end
         

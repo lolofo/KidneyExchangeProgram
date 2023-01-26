@@ -1,5 +1,9 @@
 using DataFrames;
+include(join(["cluster_utils.jl"], Base.Filesystem.path_separator))
 
+"""
+
+"""
 function transform_vertic_cycle(vertic_cycles, C)
     v_c = Dict()
     for k in vertic_cycles
@@ -17,21 +21,26 @@ function transform_vertic_cycle(vertic_cycles, C)
     return v_c
 end
 
-function sum_up(kep_graph, df, ClusterSize, nb_scenar, nb_scenar_eval, nb_cycles)
+
+"""
+
+"""
+function sum_up(kep_graph, df, ClusterSize, nb_scenar, nb_scenar_eval, nb_cycles, K=2, dist="Constant")
     # read failure rate
-    failure_rates = get_failure_rates(kep_graph, "Constant");
+    failure_rates = get_failure_rates(kep_graph, dist);
 
     # read data
-    data = extractCycleInformation(kep_graph, 2, "sum");
+    data = extractCycleInformation(kep_graph, K, "sum");
 
 
-    rank_index = rank_index_cycle(data)
+    rank_index = rank_index_cycle(data) # les indexes des cycles dont on a besoin
     nb_cycles = min(nb_cycles, length(data["Cycles"]))
 
-    C = data["Cycles_index"][1:nb_cycles]
-    cycles = data["Cycles"][rank_index][1:nb_cycles]
-    U = data["U"][rank_index][1:nb_cycles]
+    C = data["Cycles_index"][rank_index][1:nb_cycles]
+    cycles = data["Cycles"]
+    U = data["U"]
     vertic_cycles = transform_vertic_cycle(data["vertic_cycles"], C)
+
     # create scenarios
     ksi = getScenarioClusterK(kep_graph, nb_scenar)
 
@@ -55,7 +64,7 @@ function sum_up(kep_graph, df, ClusterSize, nb_scenar, nb_scenar_eval, nb_cycles
         [res_lshape["optimal"]                # status of the problem
         res_lshape["nb_iterations"]           # nb benders iterations
         res_lshape["nb_added_constraints"]    # nb added benders contraints
-        length(cycles)                        # number of cycles in the graph
+        length(C)                             # number of cycles in the graph
         res_lshape["objective_value"]         # objective value at the end of the L-shape
         objective_value(res_unroll["model"])  # unroll objective value
         z_sp                                  # stochastic objective value
@@ -63,5 +72,4 @@ function sum_up(kep_graph, df, ClusterSize, nb_scenar, nb_scenar_eval, nb_cycles
         VSS])
 
     return df
-
-end
+end;

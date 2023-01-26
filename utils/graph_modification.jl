@@ -81,7 +81,6 @@ more nb_cycles in the graph.
 * `weight` : weight to affect
 * `size_cluster` : cluster size
 """
-
 function addRandomCycles(kep_graph, nb_cycles, fail, weight, size_cluster)
     curr_nb_cycles = length(simplecycles_limited_length(kep_graph, size_cluster, 10^6))
     while length(simplecycles_limited_length(kep_graph, size_cluster, 10^6)) < curr_nb_cycles + nb_cycles
@@ -100,7 +99,6 @@ Return a list of nodes which are not involve in cycle with given length
 * `kep_graph::MetaDiGraph` : graph describing the pairs and compatibilities
 * `size_cluster` : cluster size
 """
-
 function getUselessNodes(kep_graph, size_cluster)
     nb_nodes = nv(kep_graph)
     matrix_nodes_temp = Int64[j for i in 1:nb_nodes, j in 1:nb_nodes]

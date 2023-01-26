@@ -122,7 +122,7 @@ function updateCluster(kep_graph, model, C, ksi_k, dual, k)
     mu = dual["dual_mu"]
     delta = dual["dual_delta"]
 
-    @constraint(model, model[:theta][k] <= sum(sum(sum(lambda[i,j,c]*model[:x][i,j]*ksi_k[i,j] for i in 1:1:V) for j in 1:1:V) for c in C) + sum(mu[i] for i in 1:1:V) + sum(delta[c] for c in C))
+    @constraint(model, model[:theta][k] <= sum(sum(sum(lambda[i,j,c]*model[:x][i,j]*ksi_k[i,j] for i in 1:1:V) for j in 1:1:V) for c in 1:1:length(C)) + sum(mu[i] for i in 1:1:V) + sum(delta[c] for c in 1:1:length(C)))
 end
 ;
 

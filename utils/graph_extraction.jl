@@ -86,6 +86,7 @@ The relevant information here concern the cycle formulation of the kep_graph.
 * `g` : the kep_graph
 * `K` (int): the length of the Cycles
 * `mode`: the method to use to compute the calculus of the utilities
+* `utility_range` : range of the utilities
 
 # Return 
 This function returns a Julia dictionnary with the following keys :
@@ -95,7 +96,9 @@ This function returns a Julia dictionnary with the following keys :
 * `P` : for each cycle, the probability of failure. To get the success do 1 - ...
 * `U` : the utility of each cycle
 """
-function extractCycleInformation(g, K, mode)
+function extractCycleInformation(g, K, mode, utility_range=[1, 4])
+
+    @assert length(utility_range)==2 "utility_range must be an array of length 2"
 
     enum_cycles = simplecycles_limited_length(g, K, 10^6)
     if length(enum_cycles)==0
@@ -129,7 +132,7 @@ function extractCycleInformation(g, K, mode)
         end
         merge!(vertic_cycles, Dict(v => C_v))
     end
-    U = [rand(1:4) for i in 1:1:length(U)].*U
+    U = [rand(utility_range[1]:utility_range[2]) for i in 1:1:length(U)].*U
 
     res = Dict("Cycles_index" => C, 
     "vertic_cycles" => vertic_cycles, 
@@ -142,11 +145,8 @@ end
 ;
 
 
-##############################################################################################
-##############################################################################################
-##############################################################################################
 
-### Extract information for the cluster problem ###
+# TODO : faire une fonction qui permet de réaliser le pre-pro et la lecture
 
 
 
