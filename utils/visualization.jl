@@ -27,7 +27,7 @@ function plotSolutionCluster(graph, clusterUsefull, list_uselessCycles)
     # permet de définir une taille pour les noeuds
 
 
-    nodecolor = [colorant"lightgrey", colorant"orange", colorant"red", colorant"yellow", colorant"black", colorant"pink"]
+    nodecolor = [colorant"lightgrey", colorant"orange", colorant"red", colorant"yellow", colorant"black", colorant"pink", colorant"purple", colorant"brown"]
     nodefillc = nodecolor[membership_node]
 
     # edgestrokec = nodecolor[membership_edge]

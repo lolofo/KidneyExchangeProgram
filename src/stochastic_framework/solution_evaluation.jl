@@ -17,27 +17,55 @@ This function allow us to evaluate the L-shape solution
 *`U` : the utility of each cycle in our cycles (of shape |C|)
 *`cycles` : the array of the cycles of length <= k
 """
+
+
+
+
 function evaluateSolution_ls(kep_graph, nb_scenar, x, C, vertic_cycles, U, cycles)
     ksi = getScenarioClusterK(kep_graph, nb_scenar)
     j = 0
     obj = 0
-    model = Nothing
+    nb_pers_cluster = 0
+    nb_cluster = 0
+    nb_pers_transp = 0
+    nb_cycle_transp = 0
+    nb_pers_by_cycle = length.(cycles[C])
+    model = nothing
     for i in 1:1:(nb_scenar)
         if j == 0
-            
             j += 1 
-
             model = recourseClusterProblem(x, ksi[:, :, i], C, vertic_cycles, U, cycles)
             optimize!(model)
             obj += objective_value(model)
+            
+            
+            res = getClusterUsefull(getCluster(kep_graph, x))
+            nb_pers_cluster += sum([length(res[k]) for k in keys(res)])
+            nb_cluster += length(res)
+            nb_pers_transp += sum(value.(model[:y])[:, 1].*nb_pers_by_cycle)
+            nb_cycle_transp += sum(value.(model[:y])[:, 1])
+            
         else
             
             modifyRecourseClusterProblem(model, x, C, cycles, ksi[:, :, i])
             optimize!(model)
             obj += objective_value(model)
+            
+            
+            res = getClusterUsefull(getCluster(kep_graph, x))
+            nb_pers_cluster += sum([length(res[k]) for k in keys(res)])
+            nb_cluster += length(res)
+            nb_pers_transp += sum(value.(model[:y])[:, 1].*nb_pers_by_cycle)
+            nb_cycle_transp += sum(value.(model[:y])[:, 1])
         end
     end
-    return obj / nb_scenar
+    return Dict(
+        "z_sp" => obj / nb_scenar,
+        "nb_pers_cluster" => nb_pers_cluster / nb_scenar,
+        "nb_cluster" => nb_cluster / nb_scenar,
+        "nb_pers_transp" => nb_pers_transp / nb_scenar,
+        "nb_cycle_transp" => nb_cycle_transp / nb_scenar
+    )
 end
 ;
 
