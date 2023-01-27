@@ -28,11 +28,10 @@ function sum_up(number_instance, df, ClusterSize, nb_scenar, nb_scenar_eval, nb_
     kep_graph = data["kep_graph"]
     
     if nv(kep_graph) == 0
-
         if cvar
-            push!(df, [false 0 0 0 -1.0 "TODO" "no feas" "no feas" "no feas" "no feas" "no feas" "no feas" "no feas"])
+            push!(df, [false 0 0 0 -1.0 "TODO" "no feas" "no feas" "None" "no feas" "no feas" "no feas" "no feas"])
         else
-            push!(df, [false 0 0 0 -1.0 -1.0 "no feas" "no feas" "no feas" "no feas" "no feas" "no feas" "no feas"])
+            push!(df, [false 0 0 0 -1.0 -1.0 "no feas" "no feas" "None" "no feas" "no feas" "no feas" "no feas"])
         end
     else
         C = data["Cycles_index"]
@@ -74,10 +73,16 @@ function sum_up(number_instance, df, ClusterSize, nb_scenar, nb_scenar_eval, nb_
 
             res_z_sp = evaluateSolution_ls(kep_graph, nb_scenar_eval, res_lshape["first_level_var"], C, vertic_cycles, U, cycles)
             z_sp = res_z_sp["z_sp"]
-            z_ev = evaluateSolution_ls(kep_graph, nb_scenar_eval, value.(res_mean["model"][:x]), C, vertic_cycles, U, cycles)["z_sp"]
+            if cvar
+                VSS = "None"
+            else
+                z_ev = evaluateSolution_ls(kep_graph, nb_scenar_eval, value.(res_mean["model"][:x]), C, vertic_cycles, U, cycles)["z_sp"]
+                VSS = z_sp - z_ev
+            end
+            
             z_ws = evaluateSolution_ws(kep_graph, nb_scenar_eval, C, vertic_cycles, U, cycles, ClusterSize)
             # solution evaluation 
-            VSS = z_sp - z_ev
+            
             EVPI = z_ws - z_sp
 
             nb_pers_cluster = res_z_sp["nb_pers_cluster"]
