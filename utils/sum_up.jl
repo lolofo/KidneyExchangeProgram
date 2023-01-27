@@ -4,9 +4,24 @@ include(join(["solution_extraction.jl"], Base.Filesystem.path_separator))
 
 
 """
+sum_up
 
+This function pick one instance compute solution and evaluate the results. Finally, all resultsare stored in a dataframe.
+     
+# Parameters
+
+*`number_instance` : number of instance (ex 1 -> MD-00001-00000001)
+*`df` : dataframe which store the results
+*`ClusterSize` : Cluser size
+*`nb_scenar` : number of scenarios for the L-shaped
+*`nb_scenar_eval` : number of scenarios for the solution evalution
+*`nb_cycles` : quantity of cycle considered
+*`K` : cycle size
+*`dist` : distribution to use
+*`cvar` : if true we solve problem with Cvar otherwise with expected value
+*`risk_level` : risk level for Cvar
 """
-function sum_up(number_instance, df, ClusterSize, nb_scenar, nb_scenar_eval, nb_cycles, K=2, dist="Constant", cvar=false)
+function sum_up(number_instance, df, ClusterSize, nb_scenar, nb_scenar_eval, nb_cycles, K=2, dist="Constant", cvar = false, risk_level = 0)
     # read failure rate
     data = read_and_preprocess(number_instance, K, dist, nb_cycles)
     
@@ -25,16 +40,27 @@ function sum_up(number_instance, df, ClusterSize, nb_scenar, nb_scenar_eval, nb_
 
         # solve problem
         res_mean = masterClusterProblem(kep_graph, ClusterSize, C, cycles, U, vertic_cycles)
-        res_lshape = LshapeClusterMethod(kep_graph, ClusterSize, C, cycles, U, vertic_cycles, ksi, 50, 1e-3, false)
-        res_unroll = unrollClusterProblem(kep_graph, ClusterSize, C, cycles, U, ksi, vertic_cycles)
-        
         optimize!(res_mean["model"])
-        optimize!(res_unroll["model"])
+
+        res_lshape = LshapeClusterMethod(kep_graph, ClusterSize, C, cycles, U, vertic_cycles, ksi, 50, 1e-3, false, cvar, risk_level)
+        
+        obj_unroll = nothing # initialization
+        if cvar
+            # TODO implement unroll CVar problem
+            obj_unroll = -1.0
+        else
+            res_unroll = unrollClusterProblem(kep_graph, ClusterSize, C, cycles, U, ksi, vertic_cycles)
+            optimize!(res_unroll["model"])
+            obj_unroll = objective_value(res_unroll["model"])
+        end
+        
+        
 
         res_z_sp = evaluateSolution_ls(kep_graph, nb_scenar_eval, res_lshape["first_level_var"], C, vertic_cycles, U, cycles)
         z_sp = res_z_sp["z_sp"]
         z_ev = evaluateSolution_ls(kep_graph, nb_scenar_eval, value.(res_mean["model"][:x]), C, vertic_cycles, U, cycles)["z_sp"]
         z_ws = evaluateSolution_ws(kep_graph, nb_scenar_eval, C, vertic_cycles, U, cycles, ClusterSize)
+        
 
         # solution evaluation 
         VSS = z_sp - z_ev
@@ -46,7 +72,7 @@ function sum_up(number_instance, df, ClusterSize, nb_scenar, nb_scenar_eval, nb_
             res_lshape["nb_added_constraints"]    # nb added benders contraints
             length(C)                             # number of cycles in the graph
             res_lshape["objective_value"]         # objective value at the end of the L-shape
-            objective_value(res_unroll["model"])  # unroll objective value
+            obj_unroll                            # unroll objective value
             z_sp                                  # stochastic objective value
             EVPI
             VSS
