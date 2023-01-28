@@ -31,7 +31,7 @@ function sum_up(number_instance, df, ClusterSize, nb_scenar, nb_scenar_eval, nb_
         if cvar
             push!(df, [false 0 0 0 -1.0 "TODO" "no feas" "no feas" "None" "no feas" "no feas" "no feas" "no feas"])
         else
-            push!(df, [false 0 0 0 -1.0 -1.0 "no feas" "no feas" "None" "no feas" "no feas" "no feas" "no feas"])
+            push!(df, [false 0 0 0 -1.0 -1.0 -100 -100 -100 -100 -100 -100 -100])
         end
     else
         C = data["Cycles_index"]

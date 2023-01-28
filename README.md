@@ -10,6 +10,17 @@ This repository has been made within our "Optimization under uncertainty" course
 
 ## Description
 
+## Environment
+
+To execute the different files from this repository you will need several packages.
+If you execute the following command in your terminal, at the root of this rep :
+
+```{command line}
+julia requirements.jl
+```
+
+All the packages will be installed, and then you will be able te execute all the scripts.
+
 
 ## Organization
 
