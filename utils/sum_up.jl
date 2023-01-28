@@ -28,7 +28,11 @@ function sum_up(number_instance, df, ClusterSize, nb_scenar, nb_scenar_eval, nb_
     kep_graph = data["kep_graph"]
     
     if nv(kep_graph) == 0
-        push!(df, [false 0 0 0 -1.0 -1.0 -100 -100 -100 -100 -100 -100 -100])
+        if cvar
+            push!(df, [false 0 0 0 -1.0 "TODO" "no feas" "no feas" "None" "no feas" "no feas" "no feas" "no feas"])
+        else
+            push!(df, [false 0 0 0 -1.0 -1.0 "no feas" "no feas" "None" "no feas" "no feas" "no feas" "no feas"])
+        end
     else
         C = data["Cycles_index"]
         cycles = data["Cycles"]
@@ -47,24 +51,47 @@ function sum_up(number_instance, df, ClusterSize, nb_scenar, nb_scenar_eval, nb_
         obj_unroll = nothing # initialization
         if cvar
             # TODO implement unroll CVar problem
-            obj_unroll = -1.0
+            obj_unroll = "TODO"
         else
             res_unroll = unrollClusterProblem(kep_graph, ClusterSize, C, cycles, U, ksi, vertic_cycles)
             optimize!(res_unroll["model"])
             obj_unroll = objective_value(res_unroll["model"])
         end
         
-        
+        if sum(value.(res_lshape["first_level_var"]))<0.1
 
-        res_z_sp = evaluateSolution_ls(kep_graph, nb_scenar_eval, res_lshape["first_level_var"], C, vertic_cycles, U, cycles)
-        z_sp = res_z_sp["z_sp"]
-        z_ev = evaluateSolution_ls(kep_graph, nb_scenar_eval, value.(res_mean["model"][:x]), C, vertic_cycles, U, cycles)["z_sp"]
-        z_ws = evaluateSolution_ws(kep_graph, nb_scenar_eval, C, vertic_cycles, U, cycles, ClusterSize)
-        
+            z_sp = "empty"
+            z_ev = "empty"
+            z_ws = "empty"
+            VSS = "empty"
+            EVPI = "empty"
+            nb_pers_cluster = "empty"
+            nb_cluster = "empty"
+            nb_pers_transp = "empty"
+            nb_cycle_transp = "empty"
+        else
 
-        # solution evaluation 
-        VSS = z_sp - z_ev
-        EVPI = z_ws - z_sp
+            res_z_sp = evaluateSolution_ls(kep_graph, nb_scenar_eval, res_lshape["first_level_var"], C, vertic_cycles, U, cycles)
+            z_sp = res_z_sp["z_sp"]
+            if cvar
+                VSS = "None"
+            else
+                z_ev = evaluateSolution_ls(kep_graph, nb_scenar_eval, value.(res_mean["model"][:x]), C, vertic_cycles, U, cycles)["z_sp"]
+                VSS = z_sp - z_ev
+            end
+            
+            z_ws = evaluateSolution_ws(kep_graph, nb_scenar_eval, C, vertic_cycles, U, cycles, ClusterSize)
+            # solution evaluation 
+            
+            EVPI = z_ws - z_sp
+
+            nb_pers_cluster = res_z_sp["nb_pers_cluster"]
+            nb_cluster = res_z_sp["nb_cluster"]
+            nb_pers_transp = res_z_sp["nb_pers_transp"]
+            nb_cycle_transp = res_z_sp["nb_cycle_transp"]
+        end
+
+            
 
         push!(df, 
             [res_lshape["optimal"]                # status of the problem
@@ -76,9 +103,9 @@ function sum_up(number_instance, df, ClusterSize, nb_scenar, nb_scenar_eval, nb_
             z_sp                                  # stochastic objective value
             EVPI
             VSS
-            res_z_sp["nb_pers_cluster"]
-            res_z_sp["nb_cluster"]
-            res_z_sp["nb_pers_transp"]
-            res_z_sp["nb_cycle_transp"]])
+            nb_pers_cluster
+            nb_cluster
+            nb_pers_transp
+            nb_cycle_transp])
     end
 end;
