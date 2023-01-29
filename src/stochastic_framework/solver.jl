@@ -66,9 +66,6 @@ This method uses functions available in the files :
 * `itmax` : the number of maximum iteration
 * `verbose` : if true, the main steps will be printed on the standard output.
 
-# Big instances heuristic
-
-
 # Risk averse params
 * `cvar`: if true we proceed risk averse optimization
 * `risk_level` : float, the risk level for the risk averse optimization
@@ -204,13 +201,6 @@ function LshapeClusterMethod(
         "nb_iterations" => it,
         "mp" => master_problem
     ));
-end
-;
-
-
-
-# Heuristic for big instances
-#############################
-
+end;
 
 

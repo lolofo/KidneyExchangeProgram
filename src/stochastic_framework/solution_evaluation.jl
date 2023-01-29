@@ -1,3 +1,6 @@
+using HiGHS;
+using GLPK;
+
 include(join(["recourse_problem.jl"], Base.Filesystem.path_separator))
 include(join(["..", "..", "utils", "monte_carlo.jl"], Base.Filesystem.path_separator))
 
@@ -9,7 +12,7 @@ This function allow us to evaluate the L-shape solution
 # Parameters
 
 *`kep_graph` : the kep graph
-*`nb_scenar` : amount of scenarios
+*`ξ` : the scenarios for the evaluation
 *`x` : l-shaped solution value
 *`C` : our index cycles
 * `vertic_cycles` : a dictionnary, at the key i of this list, give the a list of the index of the cycles
@@ -17,12 +20,8 @@ This function allow us to evaluate the L-shape solution
 *`U` : the utility of each cycle in our cycles (of shape |C|)
 *`cycles` : the array of the cycles of length <= k
 """
-
-
-
-
-function evaluateSolution_ls(kep_graph, nb_scenar, x, C, vertic_cycles, U, cycles)
-    ksi = getScenarioClusterK(kep_graph, nb_scenar)
+function evaluateSolution_ls(kep_graph, ξ, x, C, vertic_cycles, U, cycles)
+    nb_scenar = size(ξ)[3]
     j = 0
     obj = 0
     nb_pers_cluster = 0
@@ -31,10 +30,11 @@ function evaluateSolution_ls(kep_graph, nb_scenar, x, C, vertic_cycles, U, cycle
     nb_cycle_transp = 0
     nb_pers_by_cycle = length.(cycles[C])
     model = nothing
+
     for i in 1:1:(nb_scenar)
         if j == 0
             j += 1 
-            model = recourseClusterProblem(x, ksi[:, :, i], C, vertic_cycles, U, cycles)
+            model = recourseClusterProblem(x, ξ[:, :, i], C, vertic_cycles, U, cycles)
             optimize!(model)
             obj += objective_value(model)
             
@@ -47,7 +47,7 @@ function evaluateSolution_ls(kep_graph, nb_scenar, x, C, vertic_cycles, U, cycle
             
         else
             
-            modifyRecourseClusterProblem(model, x, C, cycles, ksi[:, :, i])
+            modifyRecourseClusterProblem(model, x, C, cycles, ξ[:, :, i])
             optimize!(model)
             obj += objective_value(model)
             
@@ -78,21 +78,21 @@ This function allow us to evaluate the wait and see problem
 # Parameters
 
 *`kep_graph` : the kep graph
-*`nb_scenar` : amount of scenarios
+*`ξ` : the scenarios for the evaluation
 *`C` : our index cycles
 * `vertic_cycles` : a dictionnary, at the key i of this list, give the a list of the index of the cycles
                     which involve the node i
 *`U` : the utility of each cycle in our cycles (of shape |C|)
 *`cycles` : the array of the cycles of length <= k
 """
-function evaluateSolution_ws(kep_graph, nb_scenar, C, vertic_cycles, U, cycles, ClusterSize)
-    ksi = getScenarioClusterK(kep_graph, nb_scenar)
+function evaluateSolution_ws(kep_graph, ξ, C, vertic_cycles, U, cycles, ClusterSize)
+    nb_scenar = size(ξ)[3]
     j = 0
     obj = 0
     model = Nothing
     for i in 1:1:(nb_scenar)
 
-        model = clusterProblem_ws(kep_graph, ksi[:, :, i], ClusterSize, C, cycles, U, vertic_cycles)
+        model = clusterProblem_ws(kep_graph, ξ[:, :, i], ClusterSize, C, cycles, U, vertic_cycles)
         optimize!(model)
         obj += objective_value(model)
 
@@ -122,7 +122,8 @@ function clusterProblem_ws(kep_graph, ksi, ClusterSize, C, cycles, U, vertic_cyc
 
     V = vertices(kep_graph) # the vertices of our graph
     
-    model = Model(GLPK.Optimizer)
+    model = Model(HiGHS.Optimizer)
+    set_silent(model)
 
     # the cluster variables
     @variable(model, x[i = V, j = V], Bin)
@@ -171,7 +172,7 @@ function clusterProblem_ws(kep_graph, ksi, ClusterSize, C, cycles, U, vertic_cyc
         # each node must be at most in one cycle
         cons = @constraint(model, sum(y[c] for c in C_v)<=1)
         set_name(cons, "cons_mu_"*string(v))
-    end
+    end;
 
     return model
 end

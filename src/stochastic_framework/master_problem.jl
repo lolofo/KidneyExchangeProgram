@@ -46,11 +46,11 @@ function masterClusterProblem(kep_graph, ClusterSize, C, cycles, U, vertic_cycle
             for k in V
                 # transitivity
                 @constraint(model, x[i, j]+x[j, k]-1 <= x[i, k])
-            end
-        end
+            end;
+        end;
         # size of the clusters
         @constraint(model, sum(x[i, j] for j in V) <= ClusterSize)
-    end
+    end;
 
     # let's define the constraint for the mean value problem
     for c in C
@@ -62,15 +62,15 @@ function masterClusterProblem(kep_graph, ClusterSize, C, cycles, U, vertic_cycle
                 j = current_cycle[1] 
             else
                 j = current_cycle[k+1]
-            end
+            end;
             @constraint(model, z[c] <= x[i, j]*(1 - get_prop(kep_graph, Edge((i,j)), :failure)))
-        end 
-    end
+        end ;
+    end;
 
     for (v, C_v) in vertic_cycles
         # each node must be at most in one cycle
         @constraint(model, sum(z[c] for c in C_v)<=1)
-    end
+    end;
 
     return(Dict("model" => model))
 end
@@ -150,8 +150,7 @@ function addCVaRVariables(model, nb_scenar, alpha)
 
     for k in 1:1:nb_scenar
         @constraint(model, model[:pi_var][k] >= - model[:theta][k] - model[:t])
-    end
+    end;
 
     @objective(model, Min, model[:t] + 1/(1-alpha) * (1/nb_scenar)*sum(model[:pi_var][k] for k in 1:1:nb_scenar))
-end
-;
+end;

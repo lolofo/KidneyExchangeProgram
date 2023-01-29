@@ -70,17 +70,18 @@ function sum_up(number_instance, df, ClusterSize, nb_scenar, nb_scenar_eval, nb_
             nb_pers_transp = "empty"
             nb_cycle_transp = "empty"
         else
+            ξ = getScenarioClusterK(kep_graph, nb_scenar_eval) # scenarios for the evaluation
 
-            res_z_sp = evaluateSolution_ls(kep_graph, nb_scenar_eval, res_lshape["first_level_var"], C, vertic_cycles, U, cycles)
+            res_z_sp = evaluateSolution_ls(kep_graph, ξ, res_lshape["first_level_var"], C, vertic_cycles, U, cycles)
             z_sp = res_z_sp["z_sp"]
             if cvar
                 VSS = "None"
             else
-                z_ev = evaluateSolution_ls(kep_graph, nb_scenar_eval, value.(res_mean["model"][:x]), C, vertic_cycles, U, cycles)["z_sp"]
+                z_ev = evaluateSolution_ls(kep_graph, ξ, value.(res_mean["model"][:x]), C, vertic_cycles, U, cycles)["z_sp"]
                 VSS = z_sp - z_ev
             end
             
-            z_ws = evaluateSolution_ws(kep_graph, nb_scenar_eval, C, vertic_cycles, U, cycles, ClusterSize)
+            z_ws = evaluateSolution_ws(kep_graph, ξ, C, vertic_cycles, U, cycles, ClusterSize)
             # solution evaluation 
             
             EVPI = z_ws - z_sp
