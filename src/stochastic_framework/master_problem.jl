@@ -133,7 +133,7 @@ end
 """
     addCVaRVariables
 
-This function will be usefull for the 
+This function will be usefull for the CVaR version of the lshape method.
 
 # Parameters
 *`model` : the master problem
@@ -149,7 +149,7 @@ function addCVaRVariables(model, nb_scenar, alpha)
     @variable(model, pi_var[k in 1:1:nb_scenar]>=0)
 
     for k in 1:1:nb_scenar
-        @constraint(model, model[:pi_var][k] >= -model[:theta][k] - model[:t])
+        @constraint(model, model[:pi_var][k] >= - model[:theta][k] - model[:t])
     end
 
     @objective(model, Min, model[:t] + 1/(1-alpha) * (1/nb_scenar)*sum(model[:pi_var][k] for k in 1:1:nb_scenar))
