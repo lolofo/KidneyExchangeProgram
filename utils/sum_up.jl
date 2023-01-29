@@ -2,6 +2,48 @@ using DataFrames;
 include(join(["solution_extraction.jl"], Base.Filesystem.path_separator))
 
 
+"""
+sum_up
+
+This function is used to summarize instance dans display features such as quantity of nodes, edges before and after preprocessing. 
+     
+"""
+function sum_up_instance(K)
+    j = 1
+    list_dir = readdir(join(["_cache", "data"], Base.Filesystem.path_separator));
+    myregex = r"MD-00001-0+(\d+).dat"
+    list_name = Int[]
+    list_n_nodes = Int[]
+    list_n_edges = Int[]
+    list_n_circles = Int[]
+    list_n_nodes_preprocess = Int[]
+    list_n_edges_preprocess = Int[]
+    
+    for i in 1:1:(length(list_dir)/2)
+        try
+            kep_graph = read_kep_file("./_cache/data/"*list_dir[j+1],"./_cache/data/"*list_dir[j]);
+            append!(list_name, parse(Int64, match(myregex, list_dir[j])[1]))
+            append!(list_n_edges, ne(kep_graph))
+            append!(list_n_nodes, nv(kep_graph))
+            append!(list_n_circles, length(simplecycles_limited_length(kep_graph, K, 10^6)))
+            # preprocessing 
+            kep_graph, temp = removeUselessNodes(kep_graph, K)
+            append!(list_n_edges_preprocess, ne(kep_graph))
+            append!(list_n_nodes_preprocess, nv(kep_graph))
+            j += 2
+        catch
+            println("error in reading")
+            j = j+1
+        end
+    end
+
+    return DataFrame(name = list_name, 
+    n_edge=list_n_edges, 
+    n_node=list_n_nodes, 
+    n_circle=list_n_circles, 
+    n_edge_preprocess=list_n_edges_preprocess, 
+    n_node_preprocess=list_n_nodes_preprocess)
+end;
 
 """
 sum_up
@@ -31,7 +73,7 @@ function sum_up(number_instance, df, ClusterSize, nb_scenar, nb_scenar_eval, nb_
         if cvar
             push!(df, [false 0 0 0 -1.0 "TODO" "no feas" "no feas" "None" "no feas" "no feas" "no feas" "no feas"])
         else
-            push!(df, [false 0 0 0 -1.0 -1.0 -100 -100 -100 -100 -100 -100 -100])
+            push!(df, [false 0 0 0 -1.0 -1.0 "no feas" "no feas" "no feas" "no feas" "no feas" "no feas" "no feas"])
         end
     else
         C = data["Cycles_index"]

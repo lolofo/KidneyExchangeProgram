@@ -9,7 +9,7 @@ This function allow us to plot in the same color the clusters
 *`graph` : the kep graph
 *`clusterUsefull` : The cluster with |cluster|>=2
 """
-function plotSolutionCluster(graph, clusterUsefull, list_uselessCycles)
+function plotSolutionCluster(graph, clusterUsefull, list_uselessCycles=[])
     n_node = nv(graph)
     n_edge = ne(graph)
 
@@ -46,14 +46,13 @@ end
 """
 plot_graph
 
-This function allow us to plot in the same color the clusters
+This function allow us to plot a graph
 
 # Parameters
-
 *`kep_graph` : the kep graph
 *`list_uselessCycles` : node deleted
 """
-function plot_graph(kep_graph, list_uselessCycles)
+function plot_graph(kep_graph, list_uselessCycles=[])
     len = length(Graphs.vertices(kep_graph)) + length(list_uselessCycles)
     nodelabel = [v for v in 1:1:len if v ∉ list_uselessCycles]
     gplot(kep_graph,

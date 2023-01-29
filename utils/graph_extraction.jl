@@ -207,14 +207,20 @@ This function returns a Julia dictionnary with the following keys :
 * `Cycles` : the exhaustive enumeration of the cycles
 * `P` : for each cycle, the probability of failure. To get the success do 1 - ...
 * `U` : the utility of each cycle
+* `utility_range` : range for the utility
+* `add_cycle` (bool) : true for adding cycles
+* `nb_add_cycle` (bool) : quantity of random cycles to add
+* `size_add_cycle` (bool) : size of random cycles to add
 """
 
-function read_and_preprocess(number_instance, K, dist, nb_cycles, utility_range=[1, 1])
+function read_and_preprocess(number_instance, K, dist, nb_cycles, utility_range=[1, 1], add_cycle=false, nb_add_cycle=0, size_add_cycle=0)
     str_number_instance = get_name_file(number_instance)
     kep_graph = read_kep_file("./_cache/data/MD-00001-"*str_number_instance*".wmd","./_cache/data/MD-00001-"*str_number_instance*".dat");
-    
+    if add_cycle
+        kep_graph = addRandomCycles(kep_graph, nb_add_cycle, 0.7, 1, size_add_cycle)
+    end
     # We remove nodes which are not involve in any cycle of length K
-    kep_graph, temp = removeUselessNodes(kep_graph, K)
+    kep_graph, list_rem_cycle = removeUselessNodes(kep_graph, K)
     if nv(kep_graph)==0
         return Dict("kep_graph" => kep_graph,
         "Cycles_index" => [], 
@@ -245,7 +251,9 @@ function read_and_preprocess(number_instance, K, dist, nb_cycles, utility_range=
         "vertic_cycles" => vertic_cycles, 
         "Cycles" => cycles, 
         "P" => P,
-        "U" => U)
+        "U" => U,
+        "list_rm_cycle" => list_rem_cycle,
+        )
     end
 
 end
